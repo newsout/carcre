@@ -1,0 +1,20 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    username: lzw
+    password: 123
+    url: jdbc:mysql://47.102.219.1/java?serverTimezone=Asia/Shanghai
+
+mybatis:
+  mapper-locations: mapper/*
+
+logging:
+  level:
+    com:
+      jnlzw:
+        java:
+          mapper: debug # 显示sql语句和结果，只显示sql语句可设置为debug
+
+
