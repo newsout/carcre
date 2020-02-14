@@ -17,6 +17,6 @@ public class ScheduledMission {
     static int i=0;
     @Scheduled(fixedRate=5000) //fixedRate=毫秒
     private void configureTasks() {
-        System.out.println("定时任务"+i++);
+        //System.out.println("定时任务"+i++);
     }
 }
