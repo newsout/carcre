@@ -14,3 +14,5 @@ integration
     component:规定返回给前端数据返回类型（Result实体类）
 mapstruct:
     各层数据转换类
+scheduling:
+    定时任务
