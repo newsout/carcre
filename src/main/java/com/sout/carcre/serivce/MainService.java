@@ -1,7 +1,7 @@
 package com.sout.carcre.serivce;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sout.carcre.mapper.bean.UserInfo;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class MainService {
 
-    public JSONObject getUserInfoByBWT(Integer user_id){
+    public UserInfo getUserInfoByBWT(Integer user_id){
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://59.110.174.204:7280/v1.0/api/app/user/getUserInfo";
         HttpHeaders headers = new HttpHeaders();
@@ -26,7 +26,11 @@ public class MainService {
         ResponseEntity<String> response = restTemplate.postForEntity( url, request , String.class);
         System.out.println(response.getBody());
         JSONObject returnJson = JSONObject.parseObject(response.getBody());
-        return returnJson;
+        JSONObject jsonObject= (JSONObject) returnJson.get("result");
+        System.out.println(jsonObject.get("user"));
+        UserInfo bean=JSONObject.parseObject(String.valueOf(jsonObject.get("user")), UserInfo.class);
+        System.out.println(bean);
+        return bean;
     }
 
 }

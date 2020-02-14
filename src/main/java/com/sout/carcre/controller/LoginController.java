@@ -1,6 +1,7 @@
 package com.sout.carcre.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.serivce.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
@@ -25,10 +26,9 @@ public class LoginController {
     先判断数据库中是否存在用户，如果不存在先从八维通获取用户数据保存至我们的数据库。
      */
     @PostMapping("api/login")
-    public JSONObject login(HttpServletRequest httpServletRequest){
+    public UserInfo login(HttpServletRequest httpServletRequest){
         //通过八维通获取数据
-        JSONObject returnJson=mainService.getUserInfoByBWT(new Integer(httpServletRequest.getParameter("user_id")));;
-
+        UserInfo returnJson=mainService.getUserInfoByBWT(new Integer(httpServletRequest.getParameter("user_id")));;
         return returnJson;
     }
 }
