@@ -17,5 +17,4 @@ public class CardInfo {
     private String cardPath;
     private Integer cardIsUsable;
     private String crateTime;
-
 }

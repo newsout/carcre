@@ -4,10 +4,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * Created by lzw on 2020/2/13.
+ * Created by lzw on 2020/2/14.
  */
 @Repository
 @Mapper
-public interface CardInfoMapper {
+public interface TradeInfoMapper {
 
 }
