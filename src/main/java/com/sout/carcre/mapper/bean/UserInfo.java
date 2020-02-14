@@ -3,6 +3,7 @@ package com.sout.carcre.mapper.bean;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by lzw on 2020/2/13.
@@ -24,9 +25,10 @@ public class UserInfo {
     private Integer userGradeAll;
     private Integer userGrade;
     private Integer userIsGcert;
-    private String crateTime;
+    private Timestamp crateTime;
 
     public UserInfo(Integer userId) {
         this.userId = userId;
+        this.crateTime=new Timestamp(new Date().getTime());
     }
 }

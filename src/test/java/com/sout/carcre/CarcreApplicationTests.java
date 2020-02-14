@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 @SpringBootTest
 class CarcreApplicationTests {
     @Autowired
@@ -14,6 +17,7 @@ class CarcreApplicationTests {
     @Test
     void contextLoads() {
         userInfoMapper.insertUserInfo(new UserInfo(2));
+        System.out.println(new Timestamp(new Date().getTime()).toString());
     }
 
 }

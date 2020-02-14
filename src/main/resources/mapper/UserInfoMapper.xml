@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.UserInfoMapper">
     <insert id="insertUserInfo" parameterType="com.sout.carcre.mapper.bean.UserInfo">
-        insert into user_info(user_id)
-        value (#{userId});
+        insert into user_info(user_id,crate_time)
+        value (#{userId},#{crateTime});
     </insert>
 </mapper>
