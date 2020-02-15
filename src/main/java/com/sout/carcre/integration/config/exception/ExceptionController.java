@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 处理异常信息
+ * 处理异常信息，除404外其他错误页面均返回错误码-1
  */
 @ControllerAdvice
 public class ExceptionController {
