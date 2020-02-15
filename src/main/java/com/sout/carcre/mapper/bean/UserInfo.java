@@ -1,5 +1,6 @@
 package com.sout.carcre.mapper.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -9,6 +10,7 @@ import java.util.Date;
  * Created by lzw on 2020/2/13.
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserInfo {
     private long id;
     private Integer userId;
@@ -31,4 +33,6 @@ public class UserInfo {
         this.userId = userId;
         this.crateTime=new Timestamp(new Date().getTime());
     }
+
+    public UserInfo(){}
 }
