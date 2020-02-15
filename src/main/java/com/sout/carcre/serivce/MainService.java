@@ -29,7 +29,6 @@ public class MainService {
         JSONObject jsonObject= (JSONObject) returnJson.get("result");
         System.out.println(jsonObject.get("user"));
         UserInfo bean=JSONObject.parseObject(String.valueOf(jsonObject.get("user")), UserInfo.class);
-        System.out.println(bean);
         return bean;
     }
 

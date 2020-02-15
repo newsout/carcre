@@ -27,7 +27,11 @@ public class UserInfo {
     private Integer userIsGcert;
     private Timestamp crateTime;
 
-    public UserInfo() {
+    public UserInfo(){
+        this.crateTime=new Timestamp(new Date().getTime());
+    }
+    public UserInfo(Integer id) {
+        this.id=id;
         this.crateTime=new Timestamp(new Date().getTime());
     }
 }
