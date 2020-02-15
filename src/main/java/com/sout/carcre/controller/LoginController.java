@@ -3,8 +3,10 @@ package com.sout.carcre.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.serivce.MainService;
 import org.apache.catalina.User;
@@ -26,6 +28,8 @@ public class LoginController {
 
     @Autowired
     MainService mainService;
+    @Autowired
+    UserInfoMapper userInfoMapper;
 
     /*
     登录功能：
@@ -33,14 +37,19 @@ public class LoginController {
      */
     @PostMapping("api/login")
     public JSONObject login(HttpServletRequest httpServletRequest){
-        //通过八维通获取数据
-        JSONObject returnJson=mainService.getUserInfoByBWT(new Integer(httpServletRequest.getParameter("user_id")));
-        JSONObject userJson=returnJson.getJSONObject("result").getJSONObject("user");
-        System.out.println(userJson.toString());
-        //JSON转化为UserInfo bean
-        //不会写了。。。
-
-
+        JSONObject returnJson=new JSONObject();
+        //通过userid查询是否存在用户
+        int flag=userInfoMapper.userIsSave(1);
+        //如果不存在
+        if (flag==1){
+            //通过八维通获取数据
+            UserInfo userInfo=mainService.getUserInfoByBWT(new Integer(httpServletRequest.getParameter("user_id")));
+            userInfoMapper.insertUserInfo(userInfo);
+        }
+        //获取用户数据
+        UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(new Integer(httpServletRequest.getParameter("user_id")));
+        JSONObject userInfoJson = (JSONObject) JSONObject.toJSON(userInfo);
+        returnJson.put("user_info",userInfoJson);
         return returnJson;
     }
 }

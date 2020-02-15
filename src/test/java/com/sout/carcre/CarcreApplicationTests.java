@@ -32,7 +32,10 @@ class CarcreApplicationTests {
 
     @Test
     void contextLoads() throws IOException {
-
+//        UserInfo userInfo=mainService.getUserInfoByBWT(1);
+//        System.out.println(userInfo.toString());
+//        userInfoMapper.insertUserInfo(userInfo);
+        System.out.println(userInfoMapper.userIsSave(1));
     }
 
 }

@@ -29,10 +29,14 @@ public class UserInfo {
     private Integer userIsGcert;
     private Timestamp crateTime;
 
-    public UserInfo(Integer userId) {
-        this.userId = userId;
+    public UserInfo(){
         this.crateTime=new Timestamp(new Date().getTime());
+        this.userIsHeight=0;
+        this.userCard="";
+        this.userPiece="";
+        this.userGradeAll=0;
+        this.userGrade=0;
+        this.userIsGcert=0;
     }
 
-    public UserInfo(){}
 }

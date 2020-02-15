@@ -4,7 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.UserInfoMapper">
     <insert id="insertUserInfo" parameterType="com.sout.carcre.mapper.bean.UserInfo">
-        insert into user_info(user_id,crate_time)
-        value (#{userId},#{crateTime});
+        insert into user_info(user_id,user_name,nickname,mobile_phone,user_is_height,user_image_path,city_id,user_card,`user_ piece`,user_grade_all,user_grade,user_is_gcert,crate_time)
+        value (#{userId},#{userName},#{nickname},#{mobilePhone},#{userIsHeight},#{userImagePath},#{cityId},#{userCard},#{userPiece},#{userGradeAll},#{userGrade},#{userIsGcert},#{crateTime})
     </insert>
+
+<!--      public Integer userIsSave();-->
+    <select id="userIsSave" resultType="integer">
+        select isnull((select distinct 1 from user_info where user_id=#{userId}))
+    </select>
+
+<!--        public UserInfo selectUserInfoByUserId(Integer userId);-->
+    <select id="selectUserInfoByUserId" resultType="com.sout.carcre.mapper.bean.UserInfo">
+        select * from user_info
+        where user_id=#{userId}
+    </select>
 </mapper>

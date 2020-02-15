@@ -2,12 +2,12 @@ server:
   port: 8090
 
 spring:
-
   datasource:
     username: lzw
     password: 123
     url: jdbc:mysql://47.102.219.1:3306/FuChuang?serverTimezone=Asia/Shanghai
-
+  jackson:
+    property-naming-strategy: CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES
 mybatis:
   mapper-locations: mapper/*
   configuration:
