@@ -13,29 +13,29 @@ import org.apache.catalina.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.*;
 
 @SpringBootTest
 class CarcreApplicationTests {
     @Autowired
     UserInfoMapper userInfoMapper;
-
     @Autowired
     MainService mainService;
-
     @Autowired
     LoginController loginController;
-
+    @Autowired
+    RedisTemplate<String,Object> redisTemplate;
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
     @Test
     void contextLoads() throws IOException {
-//        UserInfo userInfo=mainService.getUserInfoByBWT(1);
-//        System.out.println(userInfo.toString());
-//        userInfoMapper.insertUserInfo(userInfo);
-        System.out.println(userInfoMapper.userIsSave(1));
+
     }
 
 }
