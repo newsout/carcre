@@ -1,4 +1,4 @@
-package com.sout.carcre.serivce;
+package com.sout.carcre.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sout.carcre.mapper.bean.UserInfo;

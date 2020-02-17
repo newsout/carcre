@@ -1,15 +1,8 @@
 package com.sout.carcre;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sout.carcre.controller.LoginController;
 import com.sout.carcre.mapper.UserInfoMapper;
-import com.sout.carcre.mapper.bean.UserInfo;
-import com.sout.carcre.serivce.MainService;
-import org.apache.catalina.User;
+import com.sout.carcre.service.MainService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +10,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.sql.Timestamp;
-import java.util.*;
 
 @SpringBootTest
 class CarcreApplicationTests {

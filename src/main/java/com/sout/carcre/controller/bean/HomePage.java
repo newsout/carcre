@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class HomePage {
     /*用户个人数据*/
-    private UserData userinfo;
+    private UserData userData;
 
     /*签到信息*/
     private SignData signData;
