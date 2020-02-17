@@ -27,6 +27,20 @@ public class RetResponse {
     }
 
     /**
+     * 自定义返回code值 消息信息
+     * @param code
+     * @param msg
+     * @param <T>
+     * @return
+     */
+    public static <T> Result<T> makeRspCode(int code, T data,String msg) {
+        Result<T> result =new Result<>();
+        result.setResult(true);
+        result.setCode(code).setMsg(msg).setData(data);
+        return result;
+    }
+
+    /**
      * 错误返回结果
      * @param message
      * @param <T>
@@ -39,11 +53,6 @@ public class RetResponse {
         return result;
     }
 
-    public static <T> Result<T> makeRsp(int code, String msg) {
-        Result<T> result =new Result<>();
-        result.setResult(false);
-        result.setCode(code).setMsg(msg);
-        return result;
-    }
+
 
 }

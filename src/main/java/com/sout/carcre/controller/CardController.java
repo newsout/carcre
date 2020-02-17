@@ -4,6 +4,8 @@ import com.sout.carcre.controller.bean.QueryChip;
 import com.sout.carcre.controller.bean.SynCard;
 import com.sout.carcre.controller.bean.beanson.ChipCase;
 import com.sout.carcre.controller.bean.beanson.ChipNum;
+import com.sout.carcre.integration.component.result.Result;
+import com.sout.carcre.integration.component.result.RetResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,19 +23,22 @@ public class CardController {
     /*用户获取随机卡片*/
     @RequestMapping("/querychip")
     @ResponseBody
-    public QueryChip querychip(){
+    public Result querychip(){
         QueryChip queryChip=new QueryChip();
+        //返回码
+        int code=200;
 
-        return queryChip;
+        //返回指定code信息
+        return RetResponse.makeRspCode(code,queryChip,"");
     }
 
     /*用户合成卡片*/
     @RequestMapping("/syncard")
     @ResponseBody
-    public SynCard syncard(@RequestParam("card_id") String cardId){
+    public Result<SynCard> syncard(@RequestParam("card_id") String cardId){
         SynCard synCard=new SynCard();
 
-        return synCard;
+        return RetResponse.makeOKRsp(synCard);
     }
 
     /*用户跳转卡片界面请求*/
@@ -48,9 +53,9 @@ public class CardController {
     /*用户查看卡片收集情况*/
     @RequestMapping("/shipcollcase")
     @ResponseBody
-    public List<ChipCase> shipcollcase(@RequestParam("card_id") String cardId){
+    public Result shipcollcase(@RequestParam("card_id") String cardId){
         List<ChipCase> list=new ArrayList<>();
 
-        return list;
+        return RetResponse.makeOKRsp(list);
     }
 }

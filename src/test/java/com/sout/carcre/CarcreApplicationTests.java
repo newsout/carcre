@@ -1,6 +1,5 @@
 package com.sout.carcre;
 
-import com.sout.carcre.controller.LoginController;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.service.MainService;
 import org.junit.jupiter.api.Test;
@@ -17,8 +16,6 @@ class CarcreApplicationTests {
     UserInfoMapper userInfoMapper;
     @Autowired
     MainService mainService;
-    @Autowired
-    LoginController loginController;
     @Autowired
     RedisTemplate<String,Object> redisTemplate;
     @Autowired
