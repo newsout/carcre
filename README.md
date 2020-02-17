@@ -7,7 +7,7 @@
 **mapper：**
     bean:mapper层标准结构（数据库表结构）
     mapper其他类
-i**ntegration：**
+**ntegration：**
     handler：拦截器
     config：相关配置类，例如redis配置等
     redis:redis操作类
