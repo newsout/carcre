@@ -6,7 +6,7 @@ import lombok.Data;
  * 排行榜信息
  */
 @Data
-public class RankTen {
+public class RankData {
     /*排行榜排名*/
     private int userRank;
 

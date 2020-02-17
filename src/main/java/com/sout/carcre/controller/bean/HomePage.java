@@ -1,6 +1,6 @@
 package com.sout.carcre.controller.bean;
 
-import com.sout.carcre.controller.bean.beanson.RankTen;
+import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.controller.bean.beanson.SignData;
 import com.sout.carcre.controller.bean.beanson.UserData;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class HomePage {
     private SignData signData;
 
     /*排行榜前十名信息*/
-    private RankTen rankTen;
+    private RankData rankData;
 
     /*判断是否有消息*/
     private boolean message;

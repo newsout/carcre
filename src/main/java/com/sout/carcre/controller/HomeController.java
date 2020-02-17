@@ -3,8 +3,7 @@ package com.sout.carcre.controller;
 import com.sout.carcre.controller.bean.DailyTask;
 import com.sout.carcre.controller.bean.HomePage;
 import com.sout.carcre.controller.bean.MessageData;
-import com.sout.carcre.controller.bean.QueryChip;
-import com.sout.carcre.controller.bean.beanson.RankTen;
+import com.sout.carcre.controller.bean.beanson.RankData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,8 +30,8 @@ public class HomeController {
     /*请求排行榜所有数据*/
     @RequestMapping("/rankdata")
     @ResponseBody
-    public List<RankTen> rankdata(){
-        List<RankTen> list=new ArrayList<>();
+    public List<RankData> rankdata(){
+        List<RankData> list=new ArrayList<>();
 
         return list;
     }
