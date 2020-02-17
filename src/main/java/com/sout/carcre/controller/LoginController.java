@@ -6,7 +6,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.sout.carcre.integration.redis.RedisUser;
+import com.sout.carcre.integration.redis.RedisMethod;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.serivce.MainService;
@@ -41,7 +41,7 @@ public class LoginController {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
     @Autowired
-    RedisUser redisUser;
+    RedisMethod redisMethod;
 
     /*
     登录功能：
@@ -67,7 +67,7 @@ public class LoginController {
 
 
         //查询每日任务情况 先切换到1号库
-        redisUser.selectDB(1);
+        redisMethod.selectDB(1);
         String userId = String.valueOf(userInfo.getUserId());
         Map<String, Integer> map = new HashMap<>();
         if (!redisTemplate.hasKey(userId)) {  //创建键值对

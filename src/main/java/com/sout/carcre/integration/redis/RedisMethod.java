@@ -13,16 +13,10 @@ import java.util.concurrent.TimeUnit;
  * 实际操作redis CRUD类
  */
 @Service
-public class RedisUser {
+public class RedisMethod {
+
     @Autowired
     RedisTemplate<String,Object> redisTemplate;
-    @Autowired
-    StringRedisTemplate stringRedisTemplate;
-
-    /*向redis不同库中存值*/
-    public void cache(){
-
-    }
 
     /*
     选择index库
@@ -38,17 +32,10 @@ public class RedisUser {
         lettuceConnectionFactory.resetConnection();
     }
 
-
     /*删库*/
     public void cachedelete(){
         Set<String> keys = redisTemplate.keys("*");
         redisTemplate.delete(keys);
     }
-
-    /*获取cache值*/
-    public String cache(String key){
-        return stringRedisTemplate.opsForValue().get(key);
-    }
-
 
 }
