@@ -23,7 +23,7 @@ public class UserData {
     private int userRank;
 
     /*是否获得证书*/
-    private boolean userIsGcert;
+    private Integer userIsGcert;
 
     /*高等级卡片收集个数*/
     private int highNum;
