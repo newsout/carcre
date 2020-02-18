@@ -14,7 +14,7 @@ public class RankData {
     private String nickName;
 
     /*总碳积分数*/
-    private int userGrade;
+    private int userGradeAll;
 
     /*高等级卡片收集个数*/
     private int highNum;
@@ -24,4 +24,7 @@ public class RankData {
 
     /*低等级卡片收集个数*/
     private int lowNum;
+
+    //卡片权值 便于排序
+    private int allValue;
 }

@@ -2,6 +2,7 @@ package com.sout.carcre;
 
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.service.MainService;
+import com.sout.carcre.service.RankService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,9 +21,11 @@ class CarcreApplicationTests {
     RedisTemplate<String,Object> redisTemplate;
     @Autowired
     StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    RankService rankService;
     @Test
     void contextLoads() throws IOException {
-
+        System.out.println(rankService.getRankData(userInfoMapper.selectUserInfoByUserId(1)));
     }
 
 }

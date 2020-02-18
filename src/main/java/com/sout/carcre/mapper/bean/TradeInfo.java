@@ -19,5 +19,5 @@ public class TradeInfo {
     private Integer tradeIsPost;
     private Integer tradeIsSell;
     private String tradePic;
-    private Timestamp crateTime;
+    private Timestamp createTime;
 }

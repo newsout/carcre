@@ -17,8 +17,13 @@ public interface UserInfoMapper {
 
     //通过userid查询是否存在用户
     // 存在返回0,不存在返回1！！！！！！！！！！！！
-    public Integer userIsSave(Integer userId);
+    public Integer userIsSaveByUserId(Integer userId);
+    public Integer userIsSaveByMobilPhone(String mobilPhone);
+
 
     //通过userId查询用户
     public UserInfo selectUserInfoByUserId(Integer userId);
+
+    //通过手机号码查找用户
+    public UserInfo selectUserInfoByMobilPhone(String mobilPhone);
 }

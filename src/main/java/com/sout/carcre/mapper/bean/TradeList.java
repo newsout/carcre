@@ -16,5 +16,5 @@ public class TradeList {
     private Integer userId;
     private Integer tradeId;
     private Integer tradeStatus;
-    private Timestamp crateTime;
+    private Timestamp createTime;
 }

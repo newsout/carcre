@@ -16,5 +16,5 @@ public class GradeList {
     private Integer userId;
     private Integer gradeNum;
     private String gradeRemark;
-    private Timestamp crateTime;
+    private Timestamp createTime;
 }

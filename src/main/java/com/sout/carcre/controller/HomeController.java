@@ -12,6 +12,8 @@ import com.sout.carcre.integration.redis.RedisMethod;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.MainService;
+import com.sout.carcre.service.RankService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -48,6 +50,8 @@ public class HomeController {
     RedisMethod redisMethod;
     @Autowired
     SessionHandler sessionHandler;
+    @Autowired
+    RankService rankService;
 
     /*首页请求数据*/
     @RequestMapping("/homepage")
@@ -56,7 +60,7 @@ public class HomeController {
         sessionHandler.setSession(request, response, "userId", userId);
         JSONObject returnJson = new JSONObject();
         //通过userid查询是否存在用户
-        int flag = userInfoMapper.userIsSave(1);
+        int flag = userInfoMapper.userIsSaveByUserId(1);
         if (flag == 1) {
             //通过八维通获取数据
             UserInfo userInfo = mainService.getUserInfoByBWT(Integer.parseInt(userId));
@@ -83,6 +87,7 @@ public class HomeController {
         returnJson.put("signData", redisTemplate.opsForHash().entries(userid));
 
         //获取好友排行榜数据
+        returnJson.put("rankData",rankService.getRankData(userInfo));
 
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
@@ -90,12 +95,6 @@ public class HomeController {
     }
 
 
-    @RequestMapping("/test")
-    @ResponseBody
-    public String test(HttpServletRequest request, HttpServletResponse response) {
-        return sessionHandler.getSession(request, response, "userId");
-
-    }
 
     /*请求排行榜所有数据*/
     @RequestMapping("/rankdata")

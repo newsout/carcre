@@ -15,5 +15,5 @@ public class CollList {
     private long id;
     private Integer userId;
     private Integer collId;
-    private Timestamp crateTime;
+    private Timestamp createTime;
 }

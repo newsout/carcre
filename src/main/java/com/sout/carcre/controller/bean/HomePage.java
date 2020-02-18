@@ -5,6 +5,8 @@ import com.sout.carcre.controller.bean.beanson.SignData;
 import com.sout.carcre.controller.bean.beanson.UserData;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 返回首页请求数据
  */
@@ -17,7 +19,7 @@ public class HomePage {
     private SignData signData;
 
     /*排行榜前十名信息*/
-    private RankData rankData;
+    private List<RankData> rankData;
 
     /*判断是否有消息*/
     private boolean message;

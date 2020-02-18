@@ -19,8 +19,8 @@ mybatis:
 logging:
   level:
     com:
-      jnlzw:
-        java:
+      sout:
+        carcre:
           mapper: debug # 显示sql语句和结果，只显示sql语句可设置为debug
 
 
