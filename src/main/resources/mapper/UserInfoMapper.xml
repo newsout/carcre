@@ -29,4 +29,32 @@
         select * from user_info
         where mobile_phone=#{mobilPhone}
     </select>
+
+<!--        public String selectChipInfoByUserId(Integer userId);-->
+    <select id="selectChipInfoByUserId"  parameterType="integer" resultType="String">
+        select 'user_piece' from user_info
+        where user_id=#{userId}
+    </select>
+
+<!--         public int updateChipInfoByuserId(int userId,String chipinfo);-->
+    <update id="updateChipInfoByuserId" parameterType="map">
+    update user_info
+    <set>
+        <if test="chipinfo != null">
+            user_piece=#{chipinfo,jdbcType=VARCHAR}
+        </if>
+    </set>
+    where user_id=#{userId,jdbcType=BIGINT}
+    </update>
+
+    <!--         public int updateCardInfoByUserId(int userId,String cardinfo);-->
+    <update id="updateCardInfoByUserId" parameterType="map">
+        update user_info
+        <set>
+            <if test="cardinfo != null">
+                user_card=#{cardinfo,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where user_id=#{userId,jdbcType=BIGINT}
+    </update>
 </mapper>

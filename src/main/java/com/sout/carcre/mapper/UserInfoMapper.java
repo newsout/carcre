@@ -26,4 +26,13 @@ public interface UserInfoMapper {
 
     //通过手机号码查找用户
     public UserInfo selectUserInfoByMobilPhone(String mobilPhone);
+
+    //通过userId查询碎片信息
+    public String selectChipInfoByUserId(Integer userId);
+
+    //更新用户对应的碎片信息
+    public int updateChipInfoByuserId(int userId,String chipinfo);
+
+    //更新用户对应的卡片信息
+    public int updateCardInfoByUserId(int userId,String cardinfo);
 }
