@@ -33,4 +33,5 @@ public class UserData {
 
     /*低等级卡片收集个数*/
     private int lowNum;
+
 }

@@ -33,6 +33,9 @@ public class UserInfo {
     private String userFriend;
     private Timestamp createTime;
 
+    //数据库没有的字段
+    private int userRank;
+
     public UserInfo(){
         this.createTime=new Timestamp(new Date().getTime());
         this.userIsHeight=0;

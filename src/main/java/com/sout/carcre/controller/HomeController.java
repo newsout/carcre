@@ -8,6 +8,7 @@ import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
+import com.sout.carcre.integration.redis.RedisManager;
 import com.sout.carcre.integration.redis.RedisMethod;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.UserInfo;
@@ -49,6 +50,8 @@ public class HomeController {
     @Autowired
     RedisMethod redisMethod;
     @Autowired
+    RedisManager redisManager;
+    @Autowired
     SessionHandler sessionHandler;
     @Autowired
     RankService rankService;
@@ -59,36 +62,31 @@ public class HomeController {
     public Result<HomePage> homepage(@RequestParam("user_id") String userId, HttpServletRequest request, HttpServletResponse response) {
         sessionHandler.setSession(request, response, "userId", userId);
         JSONObject returnJson = new JSONObject();
-        //通过userid查询是否存在用户
-        int flag = userInfoMapper.userIsSaveByUserId(1);
-        if (flag == 1) {
+        //获取用户信息
+        UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(Integer.parseInt(userId));
+        if (userInfo == null) {
             //通过八维通获取数据
-            UserInfo userInfo = mainService.getUserInfoByBWT(Integer.parseInt(userId));
+            userInfo = mainService.getUserInfoByBWT(Integer.parseInt(userId));
             userInfoMapper.insertUserInfo(userInfo);
             //获取好友列表
         }
-        //获取用户数据
-        UserInfo userInfo = userInfoMapper.selectUserInfoByUserId(Integer.parseInt(userId));
-        returnJson.put("userData", (JSONObject) JSONObject.toJSON(userInfo));
         //查询每日任务情况 先切换到1号库
         redisMethod.selectDB(1);
-        String userid = String.valueOf(userInfo.getUserId());
         Map<String, Integer> map = new HashMap<>();
-        if (!redisTemplate.hasKey(userid)) {  //创建键值对
+        if (!redisTemplate.hasKey(userId)) {  //创建键值对
             map.put("isSign", 0);
             map.put("signNum", 0);
             map.put("shareNum", 0);
             map.put("isTravel", 0);
-            redisTemplate.opsForHash().putAll(userid, map);
+            redisTemplate.opsForHash().putAll(userId, map);
         }
-        if (Objects.equals(redisTemplate.opsForHash().get(userid, "isSign"), 0))
-            redisTemplate.opsForHash().increment(userid, "signNum", 1);
-        redisTemplate.opsForHash().put(userid, "isSign", 1);
-        returnJson.put("signData", redisTemplate.opsForHash().entries(userid));
-
-        //获取好友排行榜数据
-        returnJson.put("rankData",rankService.getRankData(userInfo));
-
+        if (Objects.equals(redisTemplate.opsForHash().get(userId, "isSign"), 0))
+            redisTemplate.opsForHash().increment(userId, "signNum", 1);
+        redisTemplate.opsForHash().put(userId, "isSign", 1);
+        //数据转为json
+        returnJson.put("signData", redisTemplate.opsForHash().entries(userId));
+        returnJson.put("rankData",rankService.getRankTenData(userInfo));
+        returnJson.put("userData", JSONObject.toJSON(userInfo)); //getrankdata要设置userinfo的值，因此要在getrankdata下面
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
         return RetResponse.makeOKRsp(homePage);
@@ -143,5 +141,16 @@ public class HomeController {
         userData.setMediumNum(200);
         userData.setHighNum(400);
         return RetResponse.makeOKRsp(userData);
+    }
+
+    /*测试test*/
+    @RequestMapping("/test")
+    @ResponseBody
+    public Result test() {
+        redisMethod.selectDB(0);
+        for (int i = 0; i < 100; i++) {
+            userInfoMapper.selectUserInfoByUserId(1);
+        }
+        return RetResponse.makeOKRsp("测试");
     }
 }
