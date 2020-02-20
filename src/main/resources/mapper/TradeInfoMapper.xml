@@ -3,5 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.TradeInfoMapper">
+    <!--        public TradeInfo selectTradeInfo();-->
+    <select id="selectTradeInfo"  resultType="com.sout.carcre.mapper.bean.TradeInfo">
+        select * from trade_info
+    </select>
 
+    <!--        public int selectGradeById(int tradeId);-->
+    <select id="selectGradeById"  resultType="Integer">
+        select trade_grade from trade_info where trade_id=#{tradeId}
+    </select>
 </mapper>

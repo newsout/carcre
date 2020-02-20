@@ -36,6 +36,12 @@
         where user_id=#{userId}
     </select>
 
+    <!--        public int selectGradebyUserId(int userId);-->
+    <select id="selectGradebyUserId"  parameterType="integer" resultType="integer">
+        select user_grade from user_info
+        where user_id=#{userId}
+    </select>
+
 <!--         public int updateChipInfoByuserId(int userId,String chipinfo);-->
     <update id="updateChipInfoByuserId" parameterType="map">
     update user_info
@@ -53,6 +59,17 @@
         <set>
             <if test="cardinfo != null">
                 user_card=#{cardinfo,jdbcType=VARCHAR}
+            </if>
+        </set>
+        where user_id=#{userId,jdbcType=BIGINT}
+    </update>
+
+    <!--         public int updateGradeByUserId(int userId,int grade);-->
+    <update id="updateGradeByUserId" parameterType="map">
+        update user_info
+        <set>
+            <if test="grade != null">
+                user_grade=#{grade}
             </if>
         </set>
         where user_id=#{userId,jdbcType=BIGINT}

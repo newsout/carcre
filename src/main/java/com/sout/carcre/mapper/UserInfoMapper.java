@@ -35,4 +35,10 @@ public interface UserInfoMapper {
 
     //更新用户对应的卡片信息
     public int updateCardInfoByUserId(int userId,String cardinfo);
+
+    //取出用户现有的碳积分数量
+    public int selectGradebyUserId(int userId);
+
+    //更新用户所拥有的现积分数
+    public int updateGradeByUserId(int userId,int grade);
 }
