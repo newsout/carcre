@@ -1,5 +1,6 @@
 package com.sout.carcre.mapper;
 
+import com.sout.carcre.mapper.bean.GradeList;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface GradeListMapper {
+
+    /*插入积分交易记录*/
+    public int insertGradeListByRemark(GradeList gradeList);
 }

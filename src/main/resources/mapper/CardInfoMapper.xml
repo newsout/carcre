@@ -15,4 +15,10 @@
         where card_height=#{height}
     </select>
 
+    <!--        public int selectGradeBycardId(int cardId);-->
+    <select id="selectGradeBycardId"  resultType="integer">
+        select card_grade from card_info
+        where card_id=#{cardId}
+    </select>
+
 </mapper>

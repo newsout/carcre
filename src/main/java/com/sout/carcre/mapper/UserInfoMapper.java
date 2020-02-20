@@ -1,6 +1,7 @@
 package com.sout.carcre.mapper;
 
 import com.sout.carcre.mapper.bean.UserInfo;
+import com.sout.carcre.service.bean.UserGrade;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.relational.core.sql.In;
@@ -41,4 +42,10 @@ public interface UserInfoMapper {
 
     //更新用户所拥有的现积分数
     public int updateGradeByUserId(int userId,int grade);
+
+    //查询用户现阶段拥有的碳积分数
+    public UserGrade selectGradeByUserId(int userId);
+
+    //更新用户拥有得碳积分
+    public int updateGradeByNew(int userId,int gradeAll,int grade);
 }

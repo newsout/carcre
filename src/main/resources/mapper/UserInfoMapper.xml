@@ -36,6 +36,12 @@
         where user_id=#{userId}
     </select>
 
+    <!--         public UserGrade selectGradeByUserId(int userId);-->
+    <select id="selectGradeByUserId"  parameterType="integer" resultType="com.sout.carcre.service.bean.UserGrade">
+        select user_grade_all,user_grade from user_info
+        where user_id=#{userId}
+    </select>
+
     <!--        public int selectGradebyUserId(int userId);-->
     <select id="selectGradebyUserId"  parameterType="integer" resultType="integer">
         select user_grade from user_info
@@ -72,6 +78,12 @@
                 user_grade=#{grade}
             </if>
         </set>
+        where user_id=#{userId,jdbcType=BIGINT}
+    </update>
+
+    <!--         public int updateGradeByNew(int userId,int gradeAll,int grade);-->
+    <update id="updateGradeByNew" parameterType="map">
+        update user_info set user_grade_all=#{gradeAll},user_grade=#{grade}
         where user_id=#{userId,jdbcType=BIGINT}
     </update>
 </mapper>

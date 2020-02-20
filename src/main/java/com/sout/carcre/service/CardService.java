@@ -6,11 +6,14 @@ import com.sout.carcre.controller.bean.beanson.ChipCase;
 import com.sout.carcre.controller.bean.beanson.ChipInfo;
 import com.sout.carcre.controller.bean.beanson.ChipNum;
 import com.sout.carcre.mapper.CardInfoMapper;
+import com.sout.carcre.mapper.GradeListMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.bean.GradeList;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.bean.ChipCollInfo;
 import com.sout.carcre.service.bean.ChipFromCard;
 import com.sout.carcre.service.bean.ChipFullInfo;
+import com.sout.carcre.service.bean.UserGrade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,8 @@ public class CardService {
     UserInfoMapper userInfoMapper;
     @Autowired
     CardInfoMapper cardInfoMapper;
+    @Autowired
+    GradeListMapper gradeListMapper;
 
     /**
      * 随机获取碎片
@@ -170,6 +175,23 @@ public class CardService {
             else
                 upAfterCardInfo.append(cardinfo[i]);
         }
+
+        /*更新数据库中用户拥有的碳积分*/
+        //从数据库中取出卡片对应的碳积分
+        int gradenum=cardInfoMapper.selectGradeBycardId(cardnumber);
+        //取出用户对应的碳积分个数
+        UserGrade userGrade=userInfoMapper.selectGradeByUserId(userNumber);
+        //更新用户拥有的碳积分
+        int allgradenew=userGrade.getUserGradeAll()+gradenum;
+        int gradenew=userGrade.getUserGrade()+gradenum;
+        userInfoMapper.updateGradeByNew(userNumber,allgradenew,gradenew);
+
+        /*增加用户获取积分记录*/
+        GradeList gradeList=new GradeList();
+        gradeList.setUserId(userNumber);
+        gradeList.setGradeNum(gradenum);
+        gradeList.setGradeRemark("card");
+        gradeListMapper.insertGradeListByRemark(gradeList);
 
         //更新碎片信息
         userInfoMapper.updateChipInfoByuserId(Integer.parseInt(userId),upAfterChipinfo.toString());
