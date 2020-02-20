@@ -34,7 +34,7 @@ public class CardService {
      * @return
      */
     public QueryChip querychip(String userId,int mileage){
-
+        System.out.println("querychip");
         /*返回数据*/
         QueryChip queryChip=new QueryChip();
 
@@ -43,6 +43,8 @@ public class CardService {
 
         //根据等级获得碎片信息
         List<ChipFromCard> chiplist=cardInfoMapper.seleteChipByheight(height);
+
+        System.out.println("chiplist");
 
         //获得随机数 randNum
         int sumnum=chiplist.size()*5;
@@ -64,17 +66,20 @@ public class CardService {
         String shippath=ranchip.split(":")[1];
         chipFullInfo.setChipId(shipId);
         chipFullInfo.setChipPath(shippath);
-
+        System.out.println("已经获取碎片信息，将要查找信息："+chipFullInfo);
         //将获取到的碎片信息送入数据库（二分查找）
         UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(Integer.parseInt(userId));
         String[] chipinfo=userInfo.getUserPiece().split(",");
         String data=chipFullInfo.getCardId()+":"+chipFullInfo.getChipId()+":1";
-
+        System.out.println(data);
         /*新的碎片在碎片信息中的位置*/
 //        int index=binsearch(chipinfo,0,chipinfo.length-1,data);
 
         /*插入新数组*/
         String[] newchipinfo=insertData(chipinfo,data);
+       for(String s:newchipinfo){
+           System.out.println(s);
+       }
         /*合并卡片数据*/
         StringBuilder stringBuilder=new StringBuilder();
         for(int i=0;i<newchipinfo.length;i++){
@@ -265,8 +270,8 @@ public class CardService {
     public int binsearch(String[] array,int left,int right,String real){
         if(right>=left){
             int indexm=(right+left)/2;
-            if(real.compareTo(array[indexm]) > 0) binsearch(array,indexm,right,real);
-            else if (real.compareTo(array[indexm]) <0) binsearch(array,left,indexm,real);
+            if(compareData(real,array[indexm])>0) binsearch(array,indexm,right,real);
+            else if (compareData(real,array[indexm])<0) binsearch(array,left,indexm,real);
             else return indexm;
         }
         return -1;
@@ -310,21 +315,21 @@ public class CardService {
      */
     public String[] insertData(String[] array,String data){
         for(int i=0;i<array.length;i++){
-            if(data.compareTo(array[i])==1){ //相比较于现阶段大
-                if(i!=array.length-1&&data.compareTo(array[i+1])<0){
-                    array= (String[]) resizeArray(array,array.length+1);
-                    for(int j=array.length-1;j>i;j--){
-                        //数组扩容
+            if(compareData(data,array[i])>0){ //相比较于现阶段大
+                if(i!=array.length-1&&compareData(data,array[i+1])<0){
+                    //数组扩容
+//                    array= (String[]) resizeArray(array,array.length+1);
+                    for(int j=array.length-1;j>i+1;j--){
                         array[j]=array[j-1];
                     }
-                    array[i]=data;
+                    array[i+1]=data;
                     break;
                 }else if(i==array.length-1){//当此时为最后一个值时，一定是插入操作
-                    array= (String[]) resizeArray(array,array.length+1);
-                    for(int j=array.length-1;j>i;j--){
+//                    array= (String[]) resizeArray(array,array.length+1);
+                    for(int j=array.length-1;j>i+1;j--){
                         array[j]=array[j-1];
                     }
-                    array[i]=data;
+                    array[i+1]=data;
                     break;
                 }else continue;//此时说明下一个值与当前值相同
 
@@ -333,12 +338,12 @@ public class CardService {
                 int chipnum=Integer.parseInt(tempdata[2])+1;
                 array[i]=tempdata[0]+":"+tempdata[1]+":"+chipnum;
                 break;
-            }else if(i==0&&data.compareTo(array[i])<0){
-                array= (String[]) resizeArray(array,array.length+1);
-                for(int j=array.length-1;j>i;j--){
+            }else if(i==0&&compareData(data,array[i])>0){
+//                array= (String[]) resizeArray(array,array.length+1);
+                for(int j=array.length-1;j>i+1;j--){
                     array[j]=array[j-1];
                 }
-                array[i]=data;
+                array[i+1]=data;
                 break;
             }
         }
@@ -378,6 +383,24 @@ public class CardService {
         if (preserveLength > 0)
             System.arraycopy(oldArray, 0, newArray, 0, preserveLength);
         return newArray;
+    }
+
+    /**
+     * 比较两个数的大小
+     * @param one 卡片ID：碎片ID：数量
+     * @param two 卡片ID：碎片ID：数量
+     * @return 1--one>two -1--one<two 0--onw=two
+     */
+    public int compareData(String one,String two){
+        String[] onearray=one.split(":");
+        String[] twoarray=two.split(":");
+        if(Integer.parseInt(onearray[0])>Integer.parseInt(twoarray[0])){
+            return 1;
+        }else if(Integer.parseInt(onearray[0])==Integer.parseInt(twoarray[0])){
+            if(Integer.parseInt(onearray[1])>Integer.parseInt(twoarray[1])) return 1;
+            else if(Integer.parseInt(onearray[1])<Integer.parseInt(twoarray[1])) return -1;
+            else return 0;
+        }else return -1;
     }
 
 }
