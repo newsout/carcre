@@ -4,4 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.TradeListMapper">
 
+    <insert id="insertTradeBytradeList" parameterType="com.sout.carcre.mapper.bean.TradeList" >
+    insert into trade_list ( user_id,trade_id,trade_status)
+    values (#{userId,jdbcType=BIGINT},#{tradeId,jdbcType=BIGINT},#{tradeStatus,jdbcType=BIGINT}
+      )
+  </insert>
+
 </mapper>

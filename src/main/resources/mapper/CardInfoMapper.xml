@@ -3,5 +3,22 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.CardInfoMapper">
+    <!--        public SynCard seleteCardBycardId(int cardId);-->
+    <select id="seleteCardBycardId"  resultType="com.sout.carcre.controller.bean.SynCard">
+        select card_path,card_height from card_info
+        where card_id=#{cardId}
+    </select>
+
+    <!--        public ChipFromCard seleteChipByheight(int height);-->
+    <select id="seleteChipByheight"  resultType="com.sout.carcre.service.bean.ChipFromCard">
+        select card_id,card_content from card_info
+        where card_height=#{height}
+    </select>
+
+    <!--        public int selectGradeBycardId(int cardId);-->
+    <select id="selectGradeBycardId"  resultType="integer">
+        select card_grade from card_info
+        where card_id=#{cardId}
+    </select>
 
 </mapper>

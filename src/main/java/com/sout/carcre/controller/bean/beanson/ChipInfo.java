@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class ChipInfo {
     /*碎片对应卡片等级*/
-    private String chipHeight;
+    private int chipHeight;
 
     /*碎片图片路径*/
     private String chipPath;
