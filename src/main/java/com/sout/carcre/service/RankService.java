@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.integration.redis.RedisManager;
 import com.sout.carcre.integration.redis.RedisMethod;
+import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,6 +32,8 @@ public class RankService {
     RedisMethod redisMethod;
     @Autowired
     RedisManager redisManager;
+    @Autowired
+    RankWeeklyMapper rankWeeklyMapper;
 
     public List<RankData> getRankTenData(UserInfo userInfo) {
         List<RankData> rankDataList = getRankData(userInfo);
@@ -72,25 +76,21 @@ public class RankService {
         }
 
         //排序
-        Collections.sort(rankDataList, new Comparator<RankData>() {
-            @Override
-            public int compare(RankData r1, RankData r2) {
-                if (r1.getAllValue() > r2.getAllValue()) {
-                    //return -1:即为正序排序
-                    return -1;
-                } else if (r1.getAllValue() == r2.getAllValue()) {
-                    return 0;
-                } else {
-                    //return 1: 即为倒序排序
-                    return 1;
-                }
-            }
-        });
+        rankDataList.sort((r1, r2) -> Integer.compare(r2.getUserGradeAll(), r1.getUserGradeAll()));
         for (int i = 0; i < rankDataList.size(); i++) {
             rankDataList.get(i).setUserRank(i + 1);
         }
         return rankDataList;
     }
 
-
+    public List<RankWeekly> getRankWeekly(UserInfo userInfo){
+        List<RankWeekly> rankWeeklyList=new ArrayList<>();
+        //在查询好友列表
+        String[] friendList = userInfo.getUserFriend().split(",");
+        for (int i = 0; i < friendList.length; i++) {
+            RankWeekly rankWeekly=rankWeeklyMapper.selectDataByMobilPhone(friendList[i]);
+            if (rankWeekly!=null)rankWeeklyList.add(rankWeekly);
+        }
+        return rankWeeklyList;
+    }
 }

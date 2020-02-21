@@ -18,8 +18,6 @@ public class HomePage {
     /*签到信息*/
     private SignData signData;
 
-    /*排行榜前十名信息*/
-    private List<RankData> rankData;
 
     /*判断是否有消息*/
     private boolean message;

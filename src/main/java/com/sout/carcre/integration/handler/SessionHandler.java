@@ -21,8 +21,8 @@ public class SessionHandler {
     @Autowired
     RedisManager redisManager;
 
-    Integer sessionDBIndex=2;
-    Integer sessionAge=60*60*24*2;
+    private Integer sessionDBIndex=2;
+    private Integer sessionAge=60*60*24*2;
 
     /*
     添加session

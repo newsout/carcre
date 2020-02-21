@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sout.carcre.mapper.RankWeeklyMapper">
+<!--    public int insertRankWeeklyData(){-->
+    <insert id="insertRankWeeklyData">
+        insert into rank_weekly(user_id, mobile_phone, nickname, grade_num, coll_num, create_time)
+        value (#{userId},#{mobilePhone},#{nickname},0,0,#{createTime})
+    </insert>
+
+<!--        public RankWeekly selectDataByMobilPhone(String mobilPhone);-->
+    <select id="selectDataByMobilPhone" resultType="com.sout.carcre.mapper.bean.RankWeekly">
+        select * from  rank_weekly
+        where mobile_phone=#{mobilPhone}
+    </select>
+</mapper>

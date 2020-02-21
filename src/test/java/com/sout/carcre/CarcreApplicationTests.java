@@ -1,5 +1,6 @@
 package com.sout.carcre;
 
+import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.RankService;
@@ -23,9 +24,11 @@ class CarcreApplicationTests {
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     RankService rankService;
+    @Autowired
+    RankWeeklyMapper rankWeeklyMapper;
     @Test
     void contextLoads() throws IOException {
-        System.out.println(rankService.getRankData(userInfoMapper.selectUserInfoByUserId(1)));
+
     }
 
 }

@@ -10,7 +10,9 @@ import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.integration.redis.RedisManager;
 import com.sout.carcre.integration.redis.RedisMethod;
+import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.RankService;
@@ -55,6 +57,8 @@ public class HomeController {
     SessionHandler sessionHandler;
     @Autowired
     RankService rankService;
+    @Autowired
+    RankWeeklyMapper rankWeeklyMapper;
 
     /*首页请求数据*/
     @RequestMapping("/homepage")
@@ -63,11 +67,12 @@ public class HomeController {
         sessionHandler.setSession(request, response, "userId", userId);
         JSONObject returnJson = new JSONObject();
         //获取用户信息
-        UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(Integer.parseInt(userId));
+        UserInfo userInfo = userInfoMapper.selectUserInfoByUserId(Integer.parseInt(userId));
         if (userInfo == null) {
             //通过八维通获取数据
             userInfo = mainService.getUserInfoByBWT(Integer.parseInt(userId));
             userInfoMapper.insertUserInfo(userInfo);
+            rankWeeklyMapper.insertRankWeeklyData(userInfo);
             //获取好友列表
         }
         //查询每日任务情况 先切换到1号库
@@ -82,26 +87,35 @@ public class HomeController {
         }
         if (Objects.equals(redisTemplate.opsForHash().get(userId, "isSign"), 0))
             redisTemplate.opsForHash().increment(userId, "signNum", 1);
-        redisTemplate.opsForHash().put(userId, "isSign", 1);
         //数据转为json
+        returnJson.put("userData", JSONObject.toJSON(userInfo));
         returnJson.put("signData", redisTemplate.opsForHash().entries(userId));
-        returnJson.put("rankData",rankService.getRankTenData(userInfo));
-        returnJson.put("userData", JSONObject.toJSON(userInfo)); //getrankdata要设置userinfo的值，因此要在getrankdata下面
+        //获取到全部信息后再将是否签到设置为1
+        redisTemplate.opsForHash().put(userId,"isSign",1);
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
         return RetResponse.makeOKRsp(homePage);
     }
 
 
-
-    /*请求排行榜所有数据*/
+    /*请求总排行榜数据*/
     @RequestMapping("/rankdata")
     @ResponseBody
-    public Result<List<RankData>> rankdata() {
-        List<RankData> list = new ArrayList<>();
-
+    public Result<List<RankData>> rankdata(HttpServletRequest request, HttpServletResponse response) {
+        Integer userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
+        List<RankData> list = new ArrayList<>(rankService.getRankData(userInfoMapper.selectUserInfoByUserId(userId)));
         return RetResponse.makeOKRsp(list);
     }
+
+    /*请求每周排行榜数据*/
+    @RequestMapping("/rankweeklydata")
+    @ResponseBody
+    public Result<List<RankWeekly>> rankweeklydata(HttpServletRequest request, HttpServletResponse response) {
+        Integer userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
+        return RetResponse.makeOKRsp(rankService.getRankWeekly(userInfoMapper.selectUserInfoByUserId(userId)));
+    }
+
+
 
     /*请求每日任务数据*/
     @RequestMapping("/dailytask")

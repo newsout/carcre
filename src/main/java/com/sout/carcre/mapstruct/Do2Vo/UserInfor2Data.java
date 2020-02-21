@@ -12,9 +12,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface UserInfor2Data {
     UserInfor2Data INSTANCE= Mappers.getMapper(UserInfor2Data.class);
-    @Mappings({
-            @Mapping(source = "userId",target = "userId")
-    })
+
     /*转换函数*/
     UserData userinfor2data(UserInfo userInfo);
 }
