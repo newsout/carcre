@@ -15,7 +15,7 @@ public class TradeInfo {
     private double tradePrice;
     private Integer tradeNum;
     private Integer tradeSto;
-    private Integer tradeGrade;
+    private Integer tradeHeight;
     private Integer tradeIsPost;
     private Integer tradeIsSell;
     private String tradePic;

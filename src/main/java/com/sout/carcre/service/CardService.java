@@ -57,12 +57,12 @@ public class CardService {
         int randNum=random.nextInt(sumnum)+1;
 
         //根据随机数获得具体获得的碎片信息
-        int listindex=randNum/5;
-        int interindex=randNum%5;
+        int listindex=(randNum-1)/5;
+        int interindex=(randNum-1)%5;
 
         /*获取的碎片详细信息*/
         ChipFullInfo chipFullInfo=new ChipFullInfo();
-        ChipFromCard chipFromCard=chiplist.get(listindex-1);
+        ChipFromCard chipFromCard=chiplist.get(listindex);
         chipFullInfo.setCardId(chipFromCard.getCardId());
         //获取随机数下的碎片信息
         String ranchip=chipFromCard.getCardContent().split(",")[interindex];
@@ -340,32 +340,42 @@ public class CardService {
             if(compareData(data,array[i])>0){ //相比较于现阶段大
                 if(i!=array.length-1&&compareData(data,array[i+1])<0){
                     //数组扩容
-//                    array= (String[]) resizeArray(array,array.length+1);
+                    if(array[array.length-1]!=null|| !array[array.length - 1].equals(""))
+                        array= (String[]) resizeArray(array,array.length+1);
                     for(int j=array.length-1;j>i+1;j--){
                         array[j]=array[j-1];
                     }
+                    //插入到当前值的下一个值
                     array[i+1]=data;
                     break;
                 }else if(i==array.length-1){//当此时为最后一个值时，一定是插入操作
+
+                    if(array[array.length-1]!=null|| !array[array.length - 1].equals(""))
+                        array= (String[]) resizeArray(array,array.length+1);
+
 //                    array= (String[]) resizeArray(array,array.length+1);
                     for(int j=array.length-1;j>i+1;j--){
                         array[j]=array[j-1];
                     }
+                    //插入到当前值的后一个值
                     array[i+1]=data;
                     break;
                 }else continue;//此时说明下一个值与当前值相同
 
-            }else if(data.equals(array[i])){//此时是获取碎片与其数据库中相同，执行更新操作
-                String[] tempdata=data.split(":");
+            }else if(compareData(data,array[i])==0){//此时是获取碎片与其数据库中相同，执行更新操作
+                String[] tempdata=array[i].split(":");
                 int chipnum=Integer.parseInt(tempdata[2])+1;
                 array[i]=tempdata[0]+":"+tempdata[1]+":"+chipnum;
                 break;
-            }else if(i==0&&compareData(data,array[i])>0){
-//                array= (String[]) resizeArray(array,array.length+1);
-                for(int j=array.length-1;j>i+1;j--){
+
+            }else if(i==0&&compareData(data,array[i])<0){
+                //如果数组最后一个数据不为null，则扩充数组
+                if(array[array.length-1]!=null|| !array[array.length - 1].equals(""))
+                array= (String[]) resizeArray(array,array.length+1);
+                for(int j=array.length-1;j>i;j--){
                     array[j]=array[j-1];
                 }
-                array[i+1]=data;
+                array[i]=data;
                 break;
             }
         }
