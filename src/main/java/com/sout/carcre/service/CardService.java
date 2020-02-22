@@ -5,9 +5,7 @@ import com.sout.carcre.controller.bean.SynCard;
 import com.sout.carcre.controller.bean.beanson.ChipCase;
 import com.sout.carcre.controller.bean.beanson.ChipInfo;
 import com.sout.carcre.controller.bean.beanson.ChipNum;
-import com.sout.carcre.mapper.CardInfoMapper;
-import com.sout.carcre.mapper.GradeListMapper;
-import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.*;
 import com.sout.carcre.mapper.bean.GradeList;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.bean.ChipCollInfo;
@@ -31,6 +29,10 @@ public class CardService {
     CardInfoMapper cardInfoMapper;
     @Autowired
     GradeListMapper gradeListMapper;
+    @Autowired
+    CollListMapper collListMapper;
+    @Autowired
+    RankWeeklyMapper rankWeeklyMapper;
 
     /**
      * 随机获取碎片
@@ -39,7 +41,7 @@ public class CardService {
      * @return
      */
     public QueryChip querychip(String userId,int mileage){
-        System.out.println("querychip");
+
         /*返回数据*/
         QueryChip queryChip=new QueryChip();
 
@@ -48,8 +50,6 @@ public class CardService {
 
         //根据等级获得碎片信息
         List<ChipFromCard> chiplist=cardInfoMapper.seleteChipByheight(height);
-
-        System.out.println("chiplist");
 
         //获得随机数 randNum
         int sumnum=chiplist.size()*5;
@@ -82,18 +82,25 @@ public class CardService {
 
         /*插入新数组*/
         String[] newchipinfo=insertData(chipinfo,data);
-       for(String s:newchipinfo){
-           System.out.println(s);
-       }
+
         /*合并卡片数据*/
         StringBuilder stringBuilder=new StringBuilder();
         for(int i=0;i<newchipinfo.length;i++){
-            if(i!=newchipinfo.length-1){
                 stringBuilder.append(newchipinfo[i]).append(",");
-            }else stringBuilder.append(newchipinfo[i]);
         }
+
         /*更新数据库信息*/
         userInfoMapper.updateChipInfoByuserId(Integer.parseInt(userId),stringBuilder.toString());
+
+        /*向数据库中插入用户获取随机碎片记录*/
+        String chipid=chipFullInfo.getCardId()+":"+chipFullInfo.getChipId();
+        collListMapper.insertChipLogByCollList(Integer.parseInt(userId),chipid);
+
+        /*更新周排行榜中的碎片数量*/
+        //查询原有的碎片数量
+        int ChipNum=rankWeeklyMapper.seleteChipNumByUserId(Integer.parseInt(userId))+1;
+        //更新碎片信息
+        rankWeeklyMapper.updateChipNumByUserId(Integer.parseInt(userId),ChipNum);
 
         //判断新的碎片数组中是否有合成卡片的可能
         boolean isnewcard=isNewCard(newchipinfo,String.valueOf(chipFullInfo.getCardId()));
@@ -112,7 +119,7 @@ public class CardService {
      * @param userId 用户ID
      * @return 返回合成的卡片信息
      */
-    public SynCard syncard(String cardId,String userId){
+    public boolean syncard(String cardId,String userId){
         SynCard synCard=new SynCard();
 
         /*更新后的碎片信息*/
@@ -130,13 +137,17 @@ public class CardService {
         String chipinfo=userInfo.getUserPiece();
         String[] chipinfoArray=chipinfo.split(",");
 
-        //遍历卡片卡片数组修改卡片对应碎片数量
+        //记录修改碎片信息的个数
+        int newchipnumber=0;
+
+        //遍历卡片数组修改卡片对应碎片数量
         /*设置标志位,减少遍历成本*/
         int state=0;//0-未遍历到卡片 1-正在遍历卡片 2-卡片遍历结束
         for(int i=0;i<chipinfoArray.length;i++){
             if (state==0||state==1){
                 String[] info=chipinfoArray[i].split(":");
                 if(Integer.parseInt(info[0])==cardnumber){
+                    newchipnumber++;//增加碎片修改个数
                     state=1;
                     Integer chipnum=Integer.parseInt(info[2])-1;
                     /*当卡片对应碎片数量为0时，对应碎片收集信息移出数组*/
@@ -150,12 +161,12 @@ public class CardService {
                 }else if(state==1) state=2;
             }else break;
         }
+        if(newchipnumber!=5){//5为碎片的总个数，判断此时是否可以合成
+            return false;
+        }
         /*拼接碎片信息，用于更新数据库*/
         for(int w=0;w<chipinfoArray.length;w++){
-            if(w!=chipinfoArray.length-1)
                 upAfterChipinfo.append(chipinfoArray[w]).append(",");
-            else
-                upAfterChipinfo.append(chipinfoArray[w]);
         }
 
         //遍历卡片获取卡片信息
@@ -170,10 +181,7 @@ public class CardService {
         }
         /*拼接卡片信息，用于更新数据库*/
         for(int i=0;i<cardinfo.length;i++){
-            if(i!=cardinfo.length-1)
                 upAfterCardInfo.append(cardinfo[i]).append(",");
-            else
-                upAfterCardInfo.append(cardinfo[i]);
         }
 
         /*更新数据库中用户拥有的碳积分*/
@@ -198,9 +206,14 @@ public class CardService {
 
         //更新卡片信息
         userInfoMapper.updateCardInfoByUserId(Integer.parseInt(userId),upAfterCardInfo.toString());
-        //查询对应卡片的路径信息以及等级信息
-        synCard=cardInfoMapper.seleteCardBycardId(Integer.parseInt(cardId));
-        return synCard;
+
+        //更新用户周排行榜数据
+        int weekGradeNum=rankWeeklyMapper.selectGradeNumByUserId(Integer.parseInt(userId))+gradenum;
+        rankWeeklyMapper.updateChipNumByUserId(Integer.parseInt(userId),weekGradeNum);
+//
+//        //查询对应卡片的路径信息以及等级信息
+//        synCard=cardInfoMapper.seleteCardBycardId(Integer.parseInt(cardId));
+        return true;
     }
 
     /**
@@ -218,6 +231,7 @@ public class CardService {
 
         /*设置哨兵，标定卡片ID的转换*/
         String guard=null;
+
         /*标定一张卡片的碎片数量*/
         int num=0;
 

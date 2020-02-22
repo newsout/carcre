@@ -42,7 +42,7 @@ public class TradeController {
     public Result userpur(@RequestParam("trade_id") String tradeId, HttpServletRequest request, HttpServletResponse response){
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
-        tradeService.userPurTrade(userId,tradeId);
+//        tradeService.userPurTrade(userId,tradeId);
         return RetResponse.makeOKRsp(tradeService.userPurTrade(userId,tradeId));
     }
 

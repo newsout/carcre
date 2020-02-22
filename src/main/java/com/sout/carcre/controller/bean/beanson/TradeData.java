@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class TradeData {
     /*商品ID*/
-    private String tradeId;
+    private Integer tradeId;
 
     /*商品图片路径*/
     private String tradePic;
@@ -20,7 +20,7 @@ public class TradeData {
     private double tradePrice;
 
     /*商品所需碳积分*/
-    private int tradeHeight;
+    private Integer tradeHeight;
 
     /*商品销售量*/
     private int tradeNum;

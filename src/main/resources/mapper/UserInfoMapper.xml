@@ -48,6 +48,12 @@
         where user_id=#{userId}
     </select>
 
+    <!--       public int selectChipStatusByUserId(int userId);-->
+    <select id="selectChipStatusByUserId"  parameterType="integer" resultType="integer">
+        select user_chip_status from user_info
+        where user_id=#{userId}
+    </select>
+
 <!--         public int updateChipInfoByuserId(int userId,String chipinfo);-->
     <update id="updateChipInfoByuserId" parameterType="map">
     update user_info
@@ -84,6 +90,15 @@
     <!--         public int updateGradeByNew(int userId,int gradeAll,int grade);-->
     <update id="updateGradeByNew" parameterType="map">
         update user_info set user_grade_all=#{gradeAll},user_grade=#{grade}
+        where user_id=#{userId,jdbcType=BIGINT}
+    </update>
+
+    <!--        public int updateChipStatusByUserId(int userId);-->
+    <update id="updateChipStatusByUserId" parameterType="INTEGER">
+        update user_info
+        <set>
+            user_chip_status=1
+        </set>
         where user_id=#{userId,jdbcType=BIGINT}
     </update>
 </mapper>

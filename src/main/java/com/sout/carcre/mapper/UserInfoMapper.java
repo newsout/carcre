@@ -48,4 +48,10 @@ public interface UserInfoMapper {
 
     //更新用户拥有得碳积分
     public int updateGradeByNew(int userId,int gradeAll,int grade);
+
+    //查询用户领取碎片状态
+    public int selectChipStatusByUserId(int userId);
+
+    //更新用户领取碎片信息
+    public int updateChipStatusByUserId(int userId);
 }
