@@ -24,7 +24,7 @@ public interface RankWeeklyMapper {
     public int seleteChipNumByUserId(int userId);
 
     /*更新用户周排行积分数据*/
-    public int updateChipNumByUserID(int userId,int gradeNum);
+    public int updateGradeNumByUserID(int userId,int gradeNum);
 
     /*查询周排行榜用户现有积分数目*/
     public int selectGradeNumByUserId(int userId);

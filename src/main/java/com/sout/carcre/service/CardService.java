@@ -209,7 +209,7 @@ public class CardService {
 
         //更新用户周排行榜数据
         int weekGradeNum=rankWeeklyMapper.selectGradeNumByUserId(Integer.parseInt(userId))+gradenum;
-        rankWeeklyMapper.updateChipNumByUserId(Integer.parseInt(userId),weekGradeNum);
+        rankWeeklyMapper.updateGradeNumByUserID(Integer.parseInt(userId),weekGradeNum);
 //
 //        //查询对应卡片的路径信息以及等级信息
 //        synCard=cardInfoMapper.seleteCardBycardId(Integer.parseInt(cardId));

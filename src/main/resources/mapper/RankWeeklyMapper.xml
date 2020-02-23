@@ -27,8 +27,8 @@
         where user_id=#{userId}
     </select>
 
-    <!--  public int updateChipNumByUserID(int userId,int gradeNum);-->
-    <update id="updateChipNumByUserID" parameterType="map">
+    <!--  public int updateGradeNumByUserID(int userId,int gradeNum);-->
+    <update id="updateGradeNumByUserID" parameterType="map">
         update rank_weekly
         <set>
             <if test="gradeNum != null">

@@ -17,12 +17,12 @@ public interface Tradeinfo2Data {
 
     Tradeinfo2Data INSTANCE= Mappers.getMapper(Tradeinfo2Data.class);
 
-//   @Mappings({
-           @Mapping(source = "tradeName",target = "tradeName")
-           @Mapping(source = "tradeId",target = "tradeId")
-           @Mapping(source = "tradePic",target = "tradePic")
+   @Mappings({
+           @Mapping(source = "tradeName",target = "tradeName"),
+           @Mapping(source = "tradeId",target = "tradeId"),
+           @Mapping(source = "tradePic",target = "tradePic"),
            @Mapping(source = "tradeGrade",target = "tradeHeight")
-//   })
+   })
     /*转换函数*/
     TradeData tradeInfo2Data(TradeInfo tradeInfo);
 }
