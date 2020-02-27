@@ -12,4 +12,7 @@ public class ChipNum {
 
     /*碎片个数*/
     private int chipNum;
+
+    /*卡片要合成的卡片数*/
+    private int cardNum;
 }

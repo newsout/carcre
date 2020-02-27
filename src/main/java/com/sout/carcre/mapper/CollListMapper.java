@@ -2,6 +2,7 @@ package com.sout.carcre.mapper;
 
 import com.sout.carcre.mapper.bean.CollList;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -12,6 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface CollListMapper {
 
     /*插入用户获得随机碎片记录*/
-    public int insertChipLogByCollList(int userId,String chipId);
+    public int insertChipLogByCollList(@Param("userId") int userId, @Param("chipId")String chipId);
 
 }

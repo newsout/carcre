@@ -1,5 +1,7 @@
 package com.sout.carcre.controller;
 
+import com.sout.carcre.controller.bean.ShopPage;
+import com.sout.carcre.controller.bean.UserPur;
 import com.sout.carcre.controller.bean.beanson.TradeData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
@@ -31,9 +33,10 @@ public class TradeController {
     /*返回碳积分商店请求*/
     @RequestMapping("/shoppage")
     @ResponseBody
-    public Result shoppage(){
-        List<TradeData> list=tradeService.tradelistinfo();
-        return RetResponse.makeOKRsp(list);
+    public Result shoppage(HttpServletRequest request,HttpServletResponse response){
+        String userID=sessionHandler.getSession(request,response,"userId");
+        ShopPage shopPage=tradeService.tradelistinfo(userID);
+        return RetResponse.makeOKRsp(shopPage);
     }
 
     /*用户是否下单成功*/
@@ -43,7 +46,8 @@ public class TradeController {
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
 //        tradeService.userPurTrade(userId,tradeId);
-        return RetResponse.makeOKRsp(tradeService.userPurTrade(userId,tradeId));
+        UserPur userPur=tradeService.userPurTrade(userId,tradeId);
+        return RetResponse.makeOKRsp(userPur);
     }
 
 }

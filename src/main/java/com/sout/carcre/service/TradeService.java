@@ -1,5 +1,7 @@
 package com.sout.carcre.service;
 
+import com.sout.carcre.controller.bean.ShopPage;
+import com.sout.carcre.controller.bean.UserPur;
 import com.sout.carcre.controller.bean.beanson.TradeData;
 import com.sout.carcre.mapper.TradeInfoMapper;
 import com.sout.carcre.mapper.TradeListMapper;
@@ -27,13 +29,18 @@ public class TradeService {
     TradeListMapper tradeListMapper;
 
     //转化商品信息-数据库->controller
-    public List<TradeData> tradelistinfo(){
+    public ShopPage tradelistinfo(String userId){
+        ShopPage shopPage=new ShopPage();
         List<TradeInfo> list=tradeInfoMapper.selectTradeInfo();
         List<TradeData> list1= new ArrayList<>();
         for(TradeInfo tradeInfo:list){
             list1.add(Tradeinfo2Data.INSTANCE.tradeInfo2Data(tradeInfo));
         }
-        return list1;
+        shopPage.setTradeDataList(list1);
+        //查询用户现有的碳积分数目
+        int grade=userInfoMapper.selectGradebyUserId(Integer.parseInt(userId));
+        shopPage.setUserGrade(grade);
+        return shopPage;
     }
 
     /**
@@ -43,7 +50,8 @@ public class TradeService {
      * @param tradeId 商品ID
      * @return 如果用户积分足够够买商品，返回true，否则返回false
      */
-    public boolean userPurTrade(String userId,String tradeId){
+    public UserPur userPurTrade(String userId, String tradeId){
+        UserPur userPur=new UserPur();
         //1、查询商品信息表获取商品所需积分
         int tradeGrade=tradeInfoMapper.selectGradeById(Integer.parseInt(tradeId));
         //2、更新用户现有碳积分
@@ -56,10 +64,14 @@ public class TradeService {
             tradeList.setTradeId(Integer.parseInt(tradeId));
             tradeList.setTradeStatus(1);
             tradeList.setUserId(Integer.parseInt(userId));
-            int data=tradeListMapper.insertTradeBytradeList(tradeList);
-            System.out.println(data);
-            return true;
-        }else return false;
+            tradeListMapper.insertTradeBytradeList(tradeList);
+            userPur.setUserIssuccess(true);
+            userPur.setUserAllGrade(newgrade);
+        }else {
+            userPur.setUserIssuccess(false);
+            userPur.setUserAllGrade(userprocess);
+        }
+        return userPur;
 
     }
 }

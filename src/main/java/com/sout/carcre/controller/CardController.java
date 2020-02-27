@@ -1,5 +1,7 @@
 package com.sout.carcre.controller;
 
+import com.sout.carcre.controller.bean.CardPage;
+import com.sout.carcre.controller.bean.ChipCollCase;
 import com.sout.carcre.controller.bean.QueryChip;
 import com.sout.carcre.controller.bean.SynCard;
 import com.sout.carcre.controller.bean.beanson.ChipCase;
@@ -89,8 +91,8 @@ public class CardController {
 
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
-        List<ChipNum> list=cardService.cardpage(userId);
-        return RetResponse.makeOKRsp(list);
+        CardPage cardPage=cardService.cardpage(userId);
+        return RetResponse.makeOKRsp(cardPage);
     }
 
     /*用户查看卡片收集情况*/
@@ -100,7 +102,7 @@ public class CardController {
 
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
-        List<ChipCase> list=cardService.chipcollcase(userId,cardId);
-        return RetResponse.makeOKRsp(list);
+        ChipCollCase chipCollCase=cardService.chipcollcase(userId,cardId);
+        return RetResponse.makeOKRsp(chipCollCase);
     }
 }

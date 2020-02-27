@@ -4,6 +4,7 @@ import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
 import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,7 +25,7 @@ public interface RankWeeklyMapper {
     public int seleteChipNumByUserId(int userId);
 
     /*更新用户周排行积分数据*/
-    public int updateGradeNumByUserID(int userId,int gradeNum);
+    public int updateGradeNumByUserID(int userId,@Param("gradeNum") int gradeNum);
 
     /*查询周排行榜用户现有积分数目*/
     public int selectGradeNumByUserId(int userId);

@@ -1,17 +1,17 @@
 package com.sout.carcre.service;
 
+import com.sout.carcre.controller.bean.CardPage;
+import com.sout.carcre.controller.bean.ChipCollCase;
 import com.sout.carcre.controller.bean.QueryChip;
 import com.sout.carcre.controller.bean.SynCard;
 import com.sout.carcre.controller.bean.beanson.ChipCase;
 import com.sout.carcre.controller.bean.beanson.ChipInfo;
 import com.sout.carcre.controller.bean.beanson.ChipNum;
+import com.sout.carcre.controller.bean.beanson.UserForCard;
 import com.sout.carcre.mapper.*;
 import com.sout.carcre.mapper.bean.GradeList;
 import com.sout.carcre.mapper.bean.UserInfo;
-import com.sout.carcre.service.bean.ChipCollInfo;
-import com.sout.carcre.service.bean.ChipFromCard;
-import com.sout.carcre.service.bean.ChipFullInfo;
-import com.sout.carcre.service.bean.UserGrade;
+import com.sout.carcre.service.bean.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,13 +52,13 @@ public class CardService {
         List<ChipFromCard> chiplist=cardInfoMapper.seleteChipByheight(height);
 
         //获得随机数 randNum
-        int sumnum=chiplist.size()*5;
+        int sumnum=chiplist.size()*9;
         Random random=new Random();
         int randNum=random.nextInt(sumnum)+1;
 
         //根据随机数获得具体获得的碎片信息
-        int listindex=(randNum-1)/5;
-        int interindex=(randNum-1)%5;
+        int listindex=(randNum-1)/9;
+        int interindex=(randNum-1)%9;
 
         /*获取的碎片详细信息*/
         ChipFullInfo chipFullInfo=new ChipFullInfo();
@@ -120,7 +120,7 @@ public class CardService {
      * @return 返回合成的卡片信息
      */
     public boolean syncard(String cardId,String userId){
-        SynCard synCard=new SynCard();
+//        SynCard synCard=new SynCard();
 
         /*更新后的碎片信息*/
         StringBuilder upAfterChipinfo=new StringBuilder();
@@ -161,12 +161,12 @@ public class CardService {
                 }else if(state==1) state=2;
             }else break;
         }
-        if(newchipnumber!=5){//5为碎片的总个数，判断此时是否可以合成
+        if(newchipnumber!=9){//5为碎片的总个数，判断此时是否可以合成
             return false;
         }
         /*拼接碎片信息，用于更新数据库*/
         for(int w=0;w<chipinfoArray.length;w++){
-                upAfterChipinfo.append(chipinfoArray[w]).append(",");
+            upAfterChipinfo.append(chipinfoArray[w]).append(",");
         }
 
         //遍历卡片获取卡片信息
@@ -195,9 +195,9 @@ public class CardService {
         userInfoMapper.updateGradeByNew(userNumber,allgradenew,gradenew);
 
         /*增加用户获取积分记录*/
-        GradeList gradeList=new GradeList();
+        GradeListInfo gradeList=new GradeListInfo();
         gradeList.setUserId(userNumber);
-        gradeList.setGradeNum(gradenum);
+        gradeList.setGrade(gradenum);
         gradeList.setGradeRemark("card");
         gradeListMapper.insertGradeListByRemark(gradeList);
 
@@ -221,7 +221,8 @@ public class CardService {
      * @param userId 用户ID
      * @return 用户收集碎片列表
      */
-    public List<ChipNum> cardpage(String userId){
+    public CardPage cardpage(String userId){
+        CardPage cardPage=new CardPage();
         List<ChipNum> list=new ArrayList<>();
         int userid=Integer.parseInt(userId);
         /*从数据库中查询用户碎片收集情况*/
@@ -235,17 +236,29 @@ public class CardService {
         /*标定一张卡片的碎片数量*/
         int num=0;
 
+        /*标定一张卡片中各碎片的收集情况*/
+        String[] cardNum=new String[9];
+        int chipindex=0;//表示当前在卡片收集情况数组中的位置
+
         for(int i=0;i<chipinfo.length;i++){
             String[] chip=chipinfo[i].split(":");
             if(chip[0].equals(guard)){
                 num+=Integer.parseInt(chip[2]);
+                cardNum[chipindex++]=chip[2];//记录卡片中各碎片的收集情况
             }else if(i!=0){
                 ChipNum chipNum=new ChipNum();
-                chipNum.setChipNum(num);
+               //待合成的卡片个数
+                int realCardnum=realCardNum(cardNum);
+                //剔除卡片合成所有碎片后剩余的碎片数量
+                int realchipNum=num-realCardnum*9;
+
+                chipNum.setChipNum(realchipNum);
+                chipNum.setCardNum(realCardnum);
                 /*存储上一个ID值*/
                 i--;
                 chipNum.setCardId(chipinfo[i].split(":")[0]);
                 num=0;
+                chipindex=0;//开启新的卡片时，将记录卡片中各碎片数量的编号置为从头开始
                 guard=chip[0];
                 list.add(chipNum);
             }else{//特殊情况为当i为0，首个值时
@@ -255,10 +268,23 @@ public class CardService {
         }
         /*存储最后一个卡片的信息*/
         ChipNum chipNum=new ChipNum();
-        chipNum.setChipNum(num);
-        chipNum.setCardId(guard);
+        int realCardnum=realCardNum(cardNum);
+        int realchipNum=num-realCardnum*9;
+        chipNum.setChipNum(realchipNum);
+        chipNum.setCardNum(realCardnum);
+        chipNum.setCardId(chipinfo[chipinfo.length-1].split(":")[0]);
         list.add(chipNum);
-        return list;
+
+        /*存储用户数据*/
+        UserForCard userForCard=new UserForCard();
+        //获取用户已经收集的卡片数量
+        int cardAllnum=cardAllnum(userInfo.getUserCard());
+        userForCard.setNickName(userInfo.getNickname());
+        userForCard.setUserImagePath(userInfo.getUserImagePath());
+        userForCard.setCardAllNum(cardAllnum);
+        cardPage.setUserForCard(userForCard);
+        cardPage.setChipNumList(list);
+        return cardPage;
     }
 
     /**
@@ -267,7 +293,8 @@ public class CardService {
      * @param cardId
      * @return
      */
-    public List<ChipCase> chipcollcase(String userId,String cardId){
+    public ChipCollCase chipcollcase(String userId, String cardId){
+        ChipCollCase chipCollCase=new ChipCollCase();
         List<ChipCase> list=new ArrayList<>();
         /*取出用户所有信息*/
         int userNumber=Integer.parseInt(userId);
@@ -292,7 +319,19 @@ public class CardService {
                 }else if(state==1) state=2;
             }else break;
         }
-        return list;
+        chipCollCase.setChipCaseList(list);
+        /*获取用户信息*/
+        UserForCard userForCard=new UserForCard();
+        int cardAllnum=cardAllnum(userInfo.getUserCard());
+        userForCard.setNickName(userInfo.getNickname());
+        userForCard.setUserImagePath(userInfo.getUserImagePath());
+        userForCard.setCardAllNum(cardAllnum);
+        chipCollCase.setUserForCard(userForCard);
+
+        /*判断用户是否有卡片合成*/
+        boolean cardIsSyn=(list.size()==9);
+        chipCollCase.setChipIsSyn(cardIsSyn);
+        return chipCollCase;
     }
 
     /**
@@ -408,9 +447,9 @@ public class CardService {
             String data=array[i].split(":")[0];
             if(data.equals(cardId))
                 chipnum++;
-            if (chipnum==5) break;
+            if (chipnum==9) break;
         }
-        if(chipnum==5) return true;
+        if(chipnum==9) return true;
         return false;
     }
 
@@ -447,6 +486,39 @@ public class CardService {
             else if(Integer.parseInt(onearray[1])<Integer.parseInt(twoarray[1])) return -1;
             else return 0;
         }else return -1;
+    }
+
+    /**
+     * 获取用户带合成的卡片数量
+     * @param chipNumArray 碎片收集情况数组
+     * @return
+     */
+    public int realCardNum(String[] chipNumArray){
+        int num=Integer.parseInt(chipNumArray[0]);
+        if(chipNumArray.length!=9) return 0;
+        for(int i=0;i<chipNumArray.length;i++){
+            if(chipNumArray[i]==null|| chipNumArray[i].equals("")) return 0;
+            else if(Integer.parseInt(chipNumArray[i])<num) {
+                num=Integer.parseInt(chipNumArray[i]);
+            }
+            chipNumArray[i]=null;
+        }
+        return num;
+    }
+
+    /**
+     *
+     * 返回用户已经收集的卡片总数
+     * @param userCard
+     * @return
+     */
+    public int cardAllnum(String userCard){
+        int num=0;//收集卡片的总数量
+        String[] cardArray=userCard.split(",");
+        for(int i=0;i<cardArray.length;i++){
+            num+=Integer.parseInt(cardArray[i].split(":")[1]);
+        }
+        return num;
     }
 
 }

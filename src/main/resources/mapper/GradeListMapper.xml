@@ -4,10 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.GradeListMapper">
 
-    <!-- public int insertGradeListByRemark(GradeList gradeList);-->
+    <!-- public int insertGradeListByRemark(GradeListInfo gradeListInfo);-->
     <insert id="insertGradeListByRemark" parameterType="com.sout.carcre.mapper.bean.GradeList" >
-    insert into grade_list ( user_id,grade_num,grade_remark)
-    values (#{userId,jdbcType=BIGINT},#{gradeNum,jdbcType=BIGINT},#{gradeRemark,jdbcType=BIGINT}
-      )
+    insert into grade_list ( user_id,grade_remark,grade_num)
+    values (#{gradeListInfo.userId,jdbcType=BIGINT},#{gradeListInfo.gradeRemark},#{gradeListInfo.grade})
   </insert>
 </mapper>

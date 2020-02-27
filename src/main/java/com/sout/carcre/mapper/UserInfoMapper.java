@@ -23,35 +23,35 @@ public interface UserInfoMapper {
 
 
     //通过userId查询用户
-    public UserInfo selectUserInfoByUserId(Integer userId);
+    public UserInfo selectUserInfoByUserId(@Param("userId")int userId);
 
     //通过手机号码查找用户
     public UserInfo selectUserInfoByMobilPhone(String mobilPhone);
 
     //通过userId查询碎片信息
-    public String selectChipInfoByUserId(Integer userId);
+    public String selectChipInfoByUserId(@Param("userId")int userId);
 
     //更新用户对应的碎片信息
-    public int updateChipInfoByuserId(int userId,String chipinfo);
+    public int updateChipInfoByuserId(@Param("userId") int userId,@Param("chipinfo")String chipinfo);
 
     //更新用户对应的卡片信息
-    public int updateCardInfoByUserId(int userId,String cardinfo);
+    public int updateCardInfoByUserId(@Param("userId")int userId,@Param("cardinfo")String cardinfo);
 
     //取出用户现有的碳积分数量
-    public int selectGradebyUserId(int userId);
+    public int selectGradebyUserId(@Param("userId")int userId);
 
     //更新用户所拥有的现积分数
-    public int updateGradeByUserId(int userId,int grade);
+    public int updateGradeByUserId(@Param("userId")int userId,@Param("grade")int grade);
 
     //查询用户现阶段拥有的碳积分数
-    public UserGrade selectGradeByUserId(int userId);
+    public UserGrade selectGradeByUserId(@Param("userId")int userId);
 
     //更新用户拥有得碳积分
-    public int updateGradeByNew(int userId,int gradeAll,int grade);
+    public int updateGradeByNew(@Param("userId")int userId,@Param("gradeAll") int gradeAll,@Param("grade")int grade);
 
     //查询用户领取碎片状态
-    public int selectChipStatusByUserId(int userId);
+    public int selectChipStatusByUserId(@Param("userId")int userId);
 
     //更新用户领取碎片信息
-    public int updateChipStatusByUserId(int userId);
+    public int updateChipStatusByUserId(@Param("userId")int userId);
 }
