@@ -38,7 +38,7 @@ public interface UserInfoMapper {
     public int updateCardInfoByUserId(@Param("userId")int userId,@Param("cardinfo")String cardinfo);
 
     //取出用户现有的碳积分数量
-    public int selectGradebyUserId(@Param("userId")int userId);
+    public int selectExistGradebyUserId(@Param("userId")int userId);
 
     //更新用户所拥有的现积分数
     public int updateGradeByUserId(@Param("userId")int userId,@Param("grade")int grade);

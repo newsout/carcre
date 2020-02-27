@@ -9,6 +9,7 @@ import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.TradeInfo;
 import com.sout.carcre.mapper.bean.TradeList;
 import com.sout.carcre.mapstruct.Do2Vo.Tradeinfo2Data;
+import com.sout.carcre.service.bean.TradeSell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +35,14 @@ public class TradeService {
         List<TradeInfo> list=tradeInfoMapper.selectTradeInfo();
         List<TradeData> list1= new ArrayList<>();
         for(TradeInfo tradeInfo:list){
+            //商品库存量大于0时返回前端
+            if(tradeInfo.getTradeSto()>0)
             list1.add(Tradeinfo2Data.INSTANCE.tradeInfo2Data(tradeInfo));
         }
+
         shopPage.setTradeDataList(list1);
         //查询用户现有的碳积分数目
-        int grade=userInfoMapper.selectGradebyUserId(Integer.parseInt(userId));
+        int grade=userInfoMapper.selectExistGradebyUserId(Integer.parseInt(userId));
         shopPage.setUserGrade(grade);
         return shopPage;
     }
@@ -55,7 +59,7 @@ public class TradeService {
         //1、查询商品信息表获取商品所需积分
         int tradeGrade=tradeInfoMapper.selectGradeById(Integer.parseInt(tradeId));
         //2、更新用户现有碳积分
-        int userprocess=userInfoMapper.selectGradebyUserId(Integer.parseInt(userId));
+        int userprocess=userInfoMapper.selectExistGradebyUserId(Integer.parseInt(userId));
         int newgrade=userprocess-tradeGrade;
         if(newgrade>=0){
             userInfoMapper.updateGradeByUserId(Integer.parseInt(userId),newgrade);
@@ -67,6 +71,14 @@ public class TradeService {
             tradeListMapper.insertTradeBytradeList(tradeList);
             userPur.setUserIssuccess(true);
             userPur.setUserAllGrade(newgrade);
+
+            /*修改商城内的信息表*/
+            //查询现阶段有的商品个数和销售量
+            TradeSell tradeSell=tradeInfoMapper.selectTradeStoAndNum(Integer.parseInt(tradeId));
+            int newNum=tradeSell.getTradeNum()+1;
+            int newSto=tradeSell.getTradeSto()-1;
+            //更新商品信息
+            tradeInfoMapper.updateTradeStoAndNum(Integer.parseInt(tradeId),newNum,newSto);
         }else {
             userPur.setUserIssuccess(false);
             userPur.setUserAllGrade(userprocess);

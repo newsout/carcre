@@ -12,4 +12,15 @@
     <select id="selectGradeById"  resultType="Integer">
         select trade_grade from trade_info where trade_id=#{tradeId}
     </select>
+
+    <!-- public TradeSell selectTradeStoAndNum(int tradeId);-->
+    <select id="selectTradeStoAndNum"  resultType="com.sout.carcre.service.bean.TradeSell">
+        select trade_num,trade_sto from trade_info where trade_id=#{tradeId}
+    </select>
+
+    <!--public int updateTradeStoAndNum(@Param("tradeId") int tradeId, @Param("tradeNum") int tradeNum, @Param("tradeSto")int tradeSto);-->
+    <update id="updateTradeStoAndNum" parameterType="map">
+        update trade_info set trade_num=#{tradeNum},trade_sto=#{tradeSto}
+        where trade_id=#{tradeId}
+    </update>
 </mapper>

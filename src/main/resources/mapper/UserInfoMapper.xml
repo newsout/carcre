@@ -42,8 +42,8 @@
         where user_id=#{userId}
     </select>
 
-    <!--        public int selectGradebyUserId(int userId);-->
-    <select id="selectGradebyUserId"  parameterType="integer" resultType="integer">
+    <!--        public int selectExistGradebyUserId(int userId);-->
+    <select id="selectExistGradebyUserId"  parameterType="integer" resultType="integer">
         select user_grade from user_info
         where user_id=#{userId}
     </select>
