@@ -91,6 +91,8 @@ public class RankService {
             RankWeekly rankWeekly=rankWeeklyMapper.selectDataByMobilPhone(friendList[i]);
             if (rankWeekly!=null)rankWeeklyList.add(rankWeekly);
         }
+        rankWeeklyList.add(rankWeeklyMapper.selectDataByMobilPhone(userInfo.getMobilePhone()));
+        rankWeeklyList.sort((r1,r2)->Integer.compare(r2.getGradeNum(),r1.getCollNum()));
         return rankWeeklyList;
     }
 }

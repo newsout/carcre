@@ -26,6 +26,7 @@ import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.mapstruct.Do2Vo.UserInfor2Data;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,6 +40,7 @@ import java.util.*;
  * 首页页面
  */
 @Controller
+@CrossOrigin //允许跨域请求注解
 public class HomeController {
 
     @Autowired
@@ -73,7 +75,6 @@ public class HomeController {
             userInfo = mainService.getUserInfoByBWT(Integer.parseInt(userId));
             userInfoMapper.insertUserInfo(userInfo);
             rankWeeklyMapper.insertRankWeeklyData(userInfo);
-            //获取好友列表
         }
         //查询每日任务情况 先切换到1号库
         redisMethod.selectDB(1);

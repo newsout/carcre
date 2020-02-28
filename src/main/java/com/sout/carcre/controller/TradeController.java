@@ -10,6 +10,7 @@ import com.sout.carcre.mapper.TradeInfoMapper;
 import com.sout.carcre.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +24,7 @@ import java.util.List;
  * 碳积分页面
  */
 @Controller
+@CrossOrigin //允许跨域请求注解
 public class TradeController {
 
     @Autowired
