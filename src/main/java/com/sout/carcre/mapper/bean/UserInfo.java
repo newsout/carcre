@@ -32,6 +32,8 @@ public class UserInfo {
     private Integer userIsGcert;
     private String userFriend;
     private Timestamp createTime;
+    private Integer isMessage;
+    private Integer isNewcard;
 
     //数据库没有的字段
     private int userRank;
@@ -48,6 +50,8 @@ public class UserInfo {
         this.userGrade=0;
         this.userIsGcert=0;
         this.userFriend="";
+        this.isMessage=0;
+        this.isNewcard=0;
     }
 
 }

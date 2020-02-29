@@ -1,5 +1,6 @@
 package com.sout.carcre;
 
+import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.service.MainService;
@@ -26,9 +27,11 @@ class CarcreApplicationTests {
     RankService rankService;
     @Autowired
     RankWeeklyMapper rankWeeklyMapper;
+    @Autowired
+    MessageListMapper messageListMapper;
     @Test
     void contextLoads() throws IOException {
-
+        System.out.println(messageListMapper.selectMessageByUserId(1));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.sout.carcre.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sout.carcre.controller.bean.DailyTask;
 import com.sout.carcre.controller.bean.HomePage;
@@ -10,6 +11,7 @@ import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.integration.redis.RedisManager;
 import com.sout.carcre.integration.redis.RedisMethod;
+import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.RankWeekly;
@@ -26,10 +28,7 @@ import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.mapstruct.Do2Vo.UserInfor2Data;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -61,6 +60,8 @@ public class HomeController {
     RankService rankService;
     @Autowired
     RankWeeklyMapper rankWeeklyMapper;
+    @Autowired
+    MessageListMapper messageListMapper;
 
     /*首页请求数据*/
     @RequestMapping("/homepage")
@@ -98,6 +99,18 @@ public class HomeController {
         return RetResponse.makeOKRsp(homePage);
     }
 
+    /*显示主页事件更新部分数据接口*/
+    @RequestMapping("/update")
+    @ResponseBody
+    public Result<JSONObject> update(HttpServletRequest request,HttpServletResponse response){
+        JSONObject reJson=new JSONObject();
+        int userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
+        UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(userId);
+        reJson.put("userGrade",userInfo.getUserGrade());
+        reJson.put("isMessage",userInfo.getIsMessage());
+        reJson.put("isNewcard",userInfo.getIsNewcard());
+        return RetResponse.makeOKRsp(reJson);
+    }
 
     /*请求总排行榜数据*/
     @RequestMapping("/rankdata")
@@ -112,11 +125,9 @@ public class HomeController {
     @RequestMapping("/rankweeklydata")
     @ResponseBody
     public Result<List<RankWeekly>> rankweeklydata(HttpServletRequest request, HttpServletResponse response) {
-        Integer userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
+        int userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
         return RetResponse.makeOKRsp(rankService.getRankWeekly(userInfoMapper.selectUserInfoByUserId(userId)));
     }
-
-
 
     /*请求每日任务数据*/
     @RequestMapping("/dailytask")
@@ -126,14 +137,12 @@ public class HomeController {
         return RetResponse.makeOKRsp(dailyTask);
     }
 
-
     /*用户查看消息列表*/
     @RequestMapping("/message")
     @ResponseBody
-    public Result<MessageData> message() {
-        MessageData messageData = new MessageData();
-
-        return RetResponse.makeOKRsp(messageData);
+    public Result<List<MessageData>> message(HttpServletResponse response,HttpServletRequest request) {
+        int userId=Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
+        return RetResponse.makeOKRsp(messageListMapper.selectMessageByUserId(userId));
     }
 
     /*测试mapstruct*/

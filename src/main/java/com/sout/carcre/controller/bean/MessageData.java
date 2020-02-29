@@ -2,6 +2,7 @@ package com.sout.carcre.controller.bean;
 
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -9,9 +10,12 @@ import java.util.List;
  */
 @Data
 public class MessageData {
+    /*消息来源用户昵称*/
+    private String nickname;
+
     /*消息内容*/
-    private List<String> megContent;
+    private String megContent;
 
     /*消息产生时间*/
-    private String createTime;
+    private Timestamp createTime;
 }
