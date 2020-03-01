@@ -19,7 +19,7 @@ public interface RankWeeklyMapper {
     public RankWeekly selectDataByMobilPhone(String mobilPhone);
 
     /*更新周排行榜的碎片数量*/
-    public int updateChipNumByUserId(int userId,int chipNum);
+    public int updateChipNumByUserId(@Param("userId")int userId,@Param("chipNum")int chipNum);
 
     /*查询周排行榜用户现有的碎片数量*/
     public int seleteChipNumByUserId(int userId);

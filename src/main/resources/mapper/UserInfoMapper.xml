@@ -101,4 +101,22 @@
         </set>
         where user_id=#{userId,jdbcType=BIGINT}
     </update>
+
+    <!--         public int updateChipStatus0ByuserId(@Param("userId")int userId);-->
+    <update id="updateChipStatus0ByuserId" parameterType="INTEGER">
+        update user_info
+        <set>
+            user_chip_status=0
+        </set>
+        where user_id=#{userId,jdbcType=BIGINT}
+    </update>
+
+
+    <!--        public int updateChipStatusByDay();-->
+    <update id="updateChipStatusByDay">
+        update user_info
+        <set>
+            user_chip_status=0
+        </set>
+    </update>
 </mapper>

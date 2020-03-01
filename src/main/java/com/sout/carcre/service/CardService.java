@@ -250,7 +250,7 @@ public class CardService {
                //待合成的卡片个数
                 int realCardnum=realCardNum(cardNum);
                 //剔除卡片合成所有碎片后剩余的碎片数量
-                int realchipNum=num-realCardnum*9;
+                int realchipNum=notRepeatChip(cardNum,realCardnum);
 
                 chipNum.setChipNum(realchipNum);
                 chipNum.setCardNum(realCardnum);
@@ -269,7 +269,7 @@ public class CardService {
         /*存储最后一个卡片的信息*/
         ChipNum chipNum=new ChipNum();
         int realCardnum=realCardNum(cardNum);
-        int realchipNum=num-realCardnum*9;
+        int realchipNum=notRepeatChip(cardNum,realCardnum);
         chipNum.setChipNum(realchipNum);
         chipNum.setCardNum(realCardnum);
         chipNum.setCardId(chipinfo[chipinfo.length-1].split(":")[0]);
@@ -501,7 +501,6 @@ public class CardService {
             else if(Integer.parseInt(chipNumArray[i])<num) {
                 num=Integer.parseInt(chipNumArray[i]);
             }
-            chipNumArray[i]=null;
         }
         return num;
     }
@@ -516,9 +515,25 @@ public class CardService {
         int num=0;//收集卡片的总数量
         String[] cardArray=userCard.split(",");
         for(int i=0;i<cardArray.length;i++){
+
             num+=Integer.parseInt(cardArray[i].split(":")[1]);
         }
         return num;
+    }
+
+    /**
+     * 获取用户不重复的卡片数量
+     * @param chipNum
+     * @return
+     */
+    public int notRepeatChip(String[] chipNum,int cardNum){
+        int number=0;
+        for(int i=0;i<chipNum.length;i++){
+            if(chipNum[i]==null|| chipNum[i].equals("")) return number;
+            if(Integer.parseInt(chipNum[i])>cardNum) number++;
+            chipNum[i]=null;
+        }
+        return number;
     }
 
 }

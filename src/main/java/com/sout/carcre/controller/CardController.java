@@ -60,6 +60,10 @@ public class CardController {
                 QueryChip queryChip= cardService.querychip(userId,basetrip.getMileage());
                 //更新用户领取碎片信息
                 userInfoMapper.updateChipStatusByUserId(Integer.parseInt(userId));
+
+                //设置数据库用户获取碎片标识为0（方便前端测试,实际没有）
+                userInfoMapper.updateChipStatus0ByuserId(Integer.parseInt(userId));
+
                 //返回成功标识
                 return RetResponse.makeRspCode(code,queryChip,"");
             }else{
