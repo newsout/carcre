@@ -9,6 +9,7 @@ import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
+import com.sout.carcre.integration.redis.RedisLock;
 import com.sout.carcre.integration.redis.RedisManager;
 import com.sout.carcre.integration.redis.RedisMethod;
 import com.sout.carcre.mapper.MessageListMapper;
@@ -33,14 +34,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * 首页页面
  */
 @Controller
 @CrossOrigin //允许跨域请求注解
-public class HomeController {
+public class HomeController{
 
     @Autowired
     MainService mainService;
@@ -66,7 +69,8 @@ public class HomeController {
     /*首页请求数据*/
     @RequestMapping("/homepage")
     @ResponseBody
-    public Result<HomePage> homepage(@RequestParam("user_id") String userId, HttpServletRequest request, HttpServletResponse response) {
+    public Result<HomePage> homepage(@RequestParam("user_id") String userId,  HttpServletRequest request,HttpServletResponse response, HttpSession session) {
+        RedisLock redisLock = new RedisLock(redisTemplate, "userId", false, userId);
         sessionHandler.setSession(request, response, "userId", userId);
         JSONObject returnJson = new JSONObject();
         //获取用户信息
@@ -96,6 +100,7 @@ public class HomeController {
         redisTemplate.opsForHash().put(userId,"isSign",1);
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
+        redisLock.unlock();//解锁
         return RetResponse.makeOKRsp(homePage);
     }
 

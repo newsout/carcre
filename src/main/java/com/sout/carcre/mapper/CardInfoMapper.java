@@ -4,6 +4,7 @@ import com.sout.carcre.controller.bean.SynCard;
 import com.sout.carcre.service.bean.ChipFromCard;
 import org.apache.coyote.OutputBuffer;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,5 +23,5 @@ public interface CardInfoMapper {
     public List<ChipFromCard> seleteChipByheight(int height);
 
     //根据卡片ID获取卡片对应的碳积分
-    public int selectGradeBycardId(int cardId);
+    public int selectGradeBycardId(@Param("cardId") int cardId);
 }
