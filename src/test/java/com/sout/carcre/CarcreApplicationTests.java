@@ -1,5 +1,6 @@
 package com.sout.carcre;
 
+import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
@@ -20,8 +21,6 @@ class CarcreApplicationTests {
     @Autowired
     MainService mainService;
     @Autowired
-    RedisTemplate<String,Object> redisTemplate;
-    @Autowired
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     RankService rankService;
@@ -29,9 +28,12 @@ class CarcreApplicationTests {
     RankWeeklyMapper rankWeeklyMapper;
     @Autowired
     MessageListMapper messageListMapper;
+    @Autowired
+    SessionHandler sessionHandler;
+
+
     @Test
     void contextLoads() throws IOException {
-        System.out.println(messageListMapper.selectMessageByUserId(1));
     }
 
 }

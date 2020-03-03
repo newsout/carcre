@@ -1,6 +1,6 @@
 package com.sout.carcre.controller;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSONObject;
 import com.sout.carcre.controller.bean.DailyTask;
 import com.sout.carcre.controller.bean.HomePage;
@@ -9,9 +9,7 @@ import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
-import com.sout.carcre.integration.redis.RedisLock;
-import com.sout.carcre.integration.redis.RedisManager;
-import com.sout.carcre.integration.redis.RedisMethod;
+import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
@@ -19,24 +17,22 @@ import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.RankService;
-import org.apache.catalina.User;
+import com.sout.carcre.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import com.sout.carcre.controller.bean.beanson.UserData;
-import com.sout.carcre.integration.component.result.Result;
-import com.sout.carcre.integration.component.result.RetResponse;
-import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.mapstruct.Do2Vo.UserInfor2Data;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.*;
-import java.util.zip.DeflaterOutputStream;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 首页页面
@@ -50,14 +46,6 @@ public class HomeController{
     @Autowired
     UserInfoMapper userInfoMapper;
     @Autowired
-    RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    StringRedisTemplate stringRedisTemplate;
-    @Autowired
-    RedisMethod redisMethod;
-    @Autowired
-    RedisManager redisManager;
-    @Autowired
     SessionHandler sessionHandler;
     @Autowired
     RankService rankService;
@@ -65,12 +53,15 @@ public class HomeController{
     RankWeeklyMapper rankWeeklyMapper;
     @Autowired
     MessageListMapper messageListMapper;
+    @Autowired
+    TestService testService;
+    @Autowired
+    RedisConfig redisConfig;
 
     /*首页请求数据*/
     @RequestMapping("/homepage")
     @ResponseBody
     public Result<HomePage> homepage(@RequestParam("user_id") String userId,  HttpServletRequest request,HttpServletResponse response, HttpSession session) {
-        RedisLock redisLock = new RedisLock(redisTemplate, "userId", false, userId);
         sessionHandler.setSession(request, response, "userId", userId);
         JSONObject returnJson = new JSONObject();
         //获取用户信息
@@ -82,25 +73,24 @@ public class HomeController{
             rankWeeklyMapper.insertRankWeeklyData(userInfo);
         }
         //查询每日任务情况 先切换到1号库
-        redisMethod.selectDB(1);
-        Map<String, Integer> map = new HashMap<>();
-        if (!redisTemplate.hasKey(userId)) {  //创建键值对
-            map.put("isSign", 0);
-            map.put("signNum", 0);
-            map.put("shareNum", 0);
-            map.put("isTravel", 0);
-            redisTemplate.opsForHash().putAll(userId, map);
+        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(1);
+        Map<String, String> map = new HashMap<>();
+        if (!template1.hasKey(userId)) {  //创建键值对
+            map.put("isSign", "0");
+            map.put("signNum", "0");
+            map.put("shareNum", "0");
+            map.put("isTravel", "0");
+            template1.opsForHash().putAll(userId, map);
         }
-        if (Objects.equals(redisTemplate.opsForHash().get(userId, "isSign"), 0))
-            redisTemplate.opsForHash().increment(userId, "signNum", 1);
+        if (Objects.equals(template1.opsForHash().get(userId, "isSign"), 0))
+            template1.opsForHash().increment(userId, "signNum", 1);
         //数据转为json
         returnJson.put("userData", JSONObject.toJSON(userInfo));
-        returnJson.put("signData", redisTemplate.opsForHash().entries(userId));
+        returnJson.put("signData", template1.opsForHash().entries(userId));
         //获取到全部信息后再将是否签到设置为1
-        redisTemplate.opsForHash().put(userId,"isSign",1);
+        template1.opsForHash().put(userId,"isSign","1");
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
-        redisLock.unlock();//解锁
         return RetResponse.makeOKRsp(homePage);
     }
 
@@ -175,11 +165,11 @@ public class HomeController{
     /*测试test*/
     @RequestMapping("/test")
     @ResponseBody
-    public Result test() {
-        redisMethod.selectDB(0);
-        for (int i = 0; i < 100; i++) {
-            userInfoMapper.selectUserInfoByUserId(1);
-        }
-        return RetResponse.makeOKRsp("测试");
+    public String test() {
+        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(1);
+        template.opsForValue().set("test1","1");
+        System.out.println(template.opsForValue().get("test1"));
+        return "返回";
     }
+
 }
