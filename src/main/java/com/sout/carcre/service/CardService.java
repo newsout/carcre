@@ -86,7 +86,7 @@ public class CardService {
         /*合并卡片数据*/
         StringBuilder stringBuilder=new StringBuilder();
         for(int i=0;i<newchipinfo.length;i++){
-                stringBuilder.append(newchipinfo[i]).append(",");
+            stringBuilder.append(newchipinfo[i]).append(",");
         }
 
         /*更新数据库信息*/
@@ -140,6 +140,10 @@ public class CardService {
         //记录修改碎片信息的个数
         int newchipnumber=0;
 
+        //获取碎片对应的要合成的数量
+        int cardWillSyn=ChipNumMin(chipinfoArray,cardId);
+        System.out.println("合成的卡片数量"+cardWillSyn);
+
         //遍历卡片数组修改卡片对应碎片数量
         /*设置标志位,减少遍历成本*/
         int state=0;//0-未遍历到卡片 1-正在遍历卡片 2-卡片遍历结束
@@ -149,7 +153,7 @@ public class CardService {
                 if(Integer.parseInt(info[0])==cardnumber){
                     newchipnumber++;//增加碎片修改个数
                     state=1;
-                    Integer chipnum=Integer.parseInt(info[2])-1;
+                    Integer chipnum=Integer.parseInt(info[2])-cardWillSyn;
                     /*当卡片对应碎片数量为0时，对应碎片收集信息移出数组*/
                     if(chipnum==0){
                         chipinfoArray= (String[]) deldataFromArray(chipinfoArray,i);
@@ -181,7 +185,7 @@ public class CardService {
         }
         /*拼接卡片信息，用于更新数据库*/
         for(int i=0;i<cardinfo.length;i++){
-                upAfterCardInfo.append(cardinfo[i]).append(",");
+            upAfterCardInfo.append(cardinfo[i]).append(",");
         }
 
         /*更新数据库中用户拥有的碳积分*/
@@ -247,7 +251,7 @@ public class CardService {
                 cardNum[chipindex++]=chip[2];//记录卡片中各碎片的收集情况
             }else if(i!=0){
                 ChipNum chipNum=new ChipNum();
-               //待合成的卡片个数
+                //待合成的卡片个数
                 int realCardnum=realCardNum(cardNum);
                 //剔除卡片合成所有碎片后剩余的碎片数量
                 int realchipNum=notRepeatChip(cardNum,realCardnum);
@@ -322,7 +326,7 @@ public class CardService {
         chipCollCase.setChipCaseList(list);
         /*获取用户信息*/
         UserForCard userForCard=new UserForCard();
-        int cardAllnum=cardAllnum(userInfo.getUserCard());
+        int cardAllnum=cardNumBycardId(userInfo.getUserCard(),cardId);
         userForCard.setNickName(userInfo.getNickname());
         userForCard.setUserImagePath(userInfo.getUserImagePath());
         userForCard.setCardAllNum(cardAllnum);
@@ -424,7 +428,7 @@ public class CardService {
             }else if(i==0&&compareData(data,array[i])<0){
                 //如果数组最后一个数据不为null，则扩充数组
                 if(array[array.length-1]!=null|| !array[array.length - 1].equals(""))
-                array= (String[]) resizeArray(array,array.length+1);
+                    array= (String[]) resizeArray(array,array.length+1);
                 for(int j=array.length-1;j>i;j--){
                     array[j]=array[j-1];
                 }
@@ -515,8 +519,23 @@ public class CardService {
         int num=0;//收集卡片的总数量
         String[] cardArray=userCard.split(",");
         for(int i=0;i<cardArray.length;i++){
-
             num+=Integer.parseInt(cardArray[i].split(":")[1]);
+        }
+        return num;
+    }
+
+    /**
+     * 返回用户收集指定卡片的个数
+     * @param userCard 用户收集所有卡片信息
+     * @param cardId 要获得信息的卡片ID
+     * @return
+     */
+    public int cardNumBycardId(String userCard,String cardId){
+        int num=0;
+        String[] cardArray=userCard.split(",");
+        for(int i=0;i<cardArray.length;i++){
+            if(cardId!=null&&cardId.equals(cardArray[i].split(":")[0]))
+                num+=Integer.parseInt(cardArray[i].split(":")[1]);
         }
         return num;
     }
@@ -536,4 +555,19 @@ public class CardService {
         return number;
     }
 
+    /**
+     * 返回一张卡片中对应的碎片数组中碎片数量的最小值
+     * @param chipInfo
+     * @return
+     */
+    public int ChipNumMin(String[] chipInfo,String cardId){
+        int minNum=Integer.parseInt(chipInfo[0].split(":")[2]);
+        if(chipInfo!=null){
+            for(int i=0;i<chipInfo.length;i++){
+                String chipsplit=chipInfo[i].split(":")[2];
+                if(cardId.equals(chipInfo[i].split(":")[0])&&minNum>Integer.parseInt(chipsplit)) minNum=Integer.parseInt(chipsplit);
+            }
+        }
+        return minNum;
+    }
 }

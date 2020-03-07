@@ -20,7 +20,7 @@ public interface Tradeinfo2Data {
    @Mappings({
            @Mapping(source = "tradeName",target = "tradeName"),
            @Mapping(source = "tradeId",target = "tradeId"),
-           @Mapping(source = "tradePic",target = "tradePic"),
+//           @Mapping(source = "tradePic",target = "tradePic"),
            @Mapping(source = "tradeGrade",target = "tradeHeight")
    })
     /*转换函数*/
