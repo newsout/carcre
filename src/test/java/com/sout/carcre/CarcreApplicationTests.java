@@ -5,6 +5,7 @@ import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.service.MainService;
+import com.sout.carcre.service.MessageService;
 import com.sout.carcre.service.RankService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,13 @@ class CarcreApplicationTests {
     MessageListMapper messageListMapper;
     @Autowired
     SessionHandler sessionHandler;
+    @Autowired
+    MessageService messageService;
 
 
     @Test
     void contextLoads() throws IOException {
+        System.out.println(messageListMapper.selectSimpleMessageByUserId(1));
     }
 
 }

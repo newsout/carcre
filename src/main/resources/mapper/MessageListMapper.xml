@@ -4,11 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.MessageListMapper">
 <!--        public selectMessageByUserId(Integer userId);-->
-    <select id="selectMessageByUserId" resultType="com.sout.carcre.controller.bean.MessageData">
-        select nickname,meg_content,message_list.create_time
+    <select id="selectSimpleMessageByUserId" resultType="com.sout.carcre.mapper.bean.MessageList">
+        select message_list.id,user_info.nickname,simple_content,message_list.create_time
         from user_info,message_list
-        where user_info.user_id=user_id_from and message_list.user_id=#{userId}
+        where user_info.user_id=user_id_from and (message_list.user_id=#{userId} or message_list.user_id=-1)
         order by message_list.id DESC
         limit 10
     </select>
+
+<!--        public MessageList selectMessageById(Integer id);-->
+    <select id="selectMessageById" resultType="com.sout.carcre.mapper.bean.MessageList">
+        select user_info.nickname,meg_content,message_list.create_time
+        from user_info,message_list
+        where user_info.user_id=user_id_from and message_list.id=#{id}
+    </select>
+
+<!--        public int insertMessage (MessageList messageList);-->
+    <insert id="insertMessage">
+        insert into message_list(user_id, user_id_from, meg_content, simple_content, create_time)
+        value (#{userId},#{userIdFrom},#{megContent},#{simpleContent},#{createTime})
+    </insert>
 </mapper>

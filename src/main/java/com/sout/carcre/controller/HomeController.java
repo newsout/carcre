@@ -13,6 +13,7 @@ import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.bean.MessageList;
 import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.MainService;
@@ -39,8 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Controller
 @CrossOrigin //允许跨域请求注解
-public class HomeController{
-
+public class HomeController {
     @Autowired
     MainService mainService;
     @Autowired
@@ -133,43 +133,19 @@ public class HomeController{
     }
 
     /*用户查看消息列表*/
+    @RequestMapping("/simple_message")
+    @ResponseBody
+    public Result<List<MessageList>> simpleMessage(HttpServletResponse response, HttpServletRequest request) {
+        int userId=Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
+        return RetResponse.makeOKRsp(messageListMapper.selectSimpleMessageByUserId(userId));
+    }
+
     @RequestMapping("/message")
     @ResponseBody
-    public Result<List<MessageData>> message(HttpServletResponse response,HttpServletRequest request) {
-        int userId=Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
-        return RetResponse.makeOKRsp(messageListMapper.selectMessageByUserId(userId));
+    public Result<MessageList> message(@RequestParam("message_id") String messageId, HttpServletResponse response, HttpServletRequest request) {
+        return RetResponse.makeOKRsp(messageListMapper.selectMessageById(Integer.parseInt(messageId)));
     }
 
-    /*测试mapstruct*/
-    @RequestMapping("/mapstruct")
-    @ResponseBody
-    public Result mapstruct() {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setId(11);
-        userInfo.setUserId(170);
-        userInfo.setUserName("ndd");
-        userInfo.setNickname("ndds");
-        userInfo.setMobilePhone("1234567890");
-        userInfo.setBWT_CPL_DVM_OS("k1");
-        userInfo.setBWT_TH_SUB_ATCW("k2");
-        userInfo.setCityId(56);
-        userInfo.setUserGrade(12);
-        userInfo.setUserImagePath("picture/path");
-        userInfo.setUserIsGcert(0);
-        UserData userData = UserInfor2Data.INSTANCE.userinfor2data(userInfo);
-        userData.setMediumNum(200);
-        userData.setHighNum(400);
-        return RetResponse.makeOKRsp(userData);
-    }
 
-    /*测试test*/
-    @RequestMapping("/test")
-    @ResponseBody
-    public String test() {
-        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(1);
-        template.opsForValue().set("test1","1");
-        System.out.println(template.opsForValue().get("test1"));
-        return "返回";
-    }
 
 }

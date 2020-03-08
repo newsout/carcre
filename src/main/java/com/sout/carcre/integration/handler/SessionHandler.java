@@ -1,17 +1,14 @@
 package com.sout.carcre.integration.handler;
 
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.IdUtil;
 import com.sout.carcre.integration.redis.RedisConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Serializable;
-import java.util.Random;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,10 +30,10 @@ public class SessionHandler {
      */
     public void setSession(HttpServletRequest request,HttpServletResponse response,String key,String value){
         RedisTemplate<String, Object> template2=redisConfig.getRedisTemplateByDb(sessionDBIndex);
-        Cookie cookies[]= request.getCookies();
+        Cookie[] cookies = request.getCookies();
         String sessionID=null;
         if (cookies!=null) for (Cookie cookie:cookies)if (cookie.getName().equals("sessionID"))sessionID=cookie.getValue();
-        if (sessionID!=null&&template2.hasKey(sessionID)){
+        if (sessionID!=null&&template2.hasKey(sessionID)){ //重新设置session过期时间
             template2.expire(sessionID,sessionAge, TimeUnit.SECONDS);
             return;
         }
@@ -53,7 +50,7 @@ public class SessionHandler {
      */
     public String getSession(HttpServletRequest request, HttpServletResponse response,String key){
         RedisTemplate<String, Object> template2=redisConfig.getRedisTemplateByDb(sessionDBIndex);
-        Cookie cookies[]=request.getCookies();
+        Cookie[] cookies = request.getCookies();
         String sessionID=null;
         if(cookies!=null)for (Cookie cookie:cookies )if (cookie.getName().equals("sessionID"))sessionID=cookie.getValue();
         if (sessionID == null)  return "1";//cookie中获取不到sessionID  暂时返回1

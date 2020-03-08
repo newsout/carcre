@@ -14,6 +14,10 @@ import java.util.List;
 @Mapper
 public interface MessageListMapper {
 
-    public List<MessageData> selectMessageByUserId(Integer userId);
+    public List<MessageList> selectSimpleMessageByUserId(Integer userId);
+
+    public MessageList selectMessageById(Integer id);
+
+    public int insertMessage (MessageList messageList);
 
 }

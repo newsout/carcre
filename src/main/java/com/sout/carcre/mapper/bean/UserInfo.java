@@ -32,6 +32,8 @@ public class UserInfo {
     private Integer userIsGcert;
     private String userFriend;
     private Timestamp createTime;
+
+
     private Integer isMessage;
     private Integer isNewcard;
 
