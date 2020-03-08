@@ -16,9 +16,6 @@ public class TradeData {
     /*商品名称*/
     private String tradeName;
 
-    /*商品价格*/
-    private double tradePrice;
-
     /*商品所需碳积分*/
     private Integer tradeHeight;
 
@@ -34,7 +31,6 @@ public class TradeData {
         this.tradeId = tradeId;
         this.tradePic = tradePic;
         this.tradeName = tradeName;
-        this.tradePrice = tradePrice;
         this.tradeHeight = tradeHeight;
         this.tradeNum = tradeNum;
         this.tradeSto = tradeSto;
@@ -62,14 +58,6 @@ public class TradeData {
 
     public void setTradeName(String tradeName) {
         this.tradeName = tradeName;
-    }
-
-    public double getTradePrice() {
-        return tradePrice;
-    }
-
-    public void setTradePrice(double tradePrice) {
-        this.tradePrice = tradePrice;
     }
 
     public Integer getTradeHeight() {
