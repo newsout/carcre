@@ -1,9 +1,11 @@
 package com.sout.carcre;
 
 import com.sout.carcre.integration.handler.SessionHandler;
+import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.MessageService;
 import com.sout.carcre.service.RankService;
@@ -14,6 +16,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest
 class CarcreApplicationTests {
@@ -33,11 +37,13 @@ class CarcreApplicationTests {
     SessionHandler sessionHandler;
     @Autowired
     MessageService messageService;
-
+    @Autowired
+    RedisConfig redisConfig;
 
     @Test
     void contextLoads() throws IOException {
-        System.out.println(messageListMapper.selectSimpleMessageByUserId(1));
+
+
     }
 
 }

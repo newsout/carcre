@@ -26,6 +26,7 @@ public class MessageService {
             MessageList messageList = new MessageList(userInfoMapper.selectUserInfoByMobilPhone(friend).getUserId(), userInfo.getUserId(),
                     messageContent[contentIndex], messageContent[contentIndex].substring(0, 10));
             messageListMapper.insertMessage(messageList);
+            userInfoMapper.updateIsMessageByMobilPhone(friend,1);//更新好友message状态
         }
     }
 }

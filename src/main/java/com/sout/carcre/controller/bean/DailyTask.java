@@ -1,5 +1,6 @@
 package com.sout.carcre.controller.bean;
 
+import com.sout.carcre.controller.bean.beanson.SignData;
 import lombok.Data;
 
 /**
@@ -7,9 +8,10 @@ import lombok.Data;
  */
 @Data
 public class DailyTask {
+    /*用户签到次数*/
+    private int signNum;
 
-    /*用户是否签到*/
-    private int userIsSign;
+    private int isSign;
 
     /*用户是否分享*/
     private int userIsShare;
@@ -22,4 +24,5 @@ public class DailyTask {
 
     /*分享次数*/
     private int shareNum;
+
 }

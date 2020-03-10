@@ -8,6 +8,7 @@ import com.sout.carcre.controller.bean.MessageData;
 import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
+import com.sout.carcre.integration.handler.Bean2Map;
 import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.MessageListMapper;
@@ -19,6 +20,7 @@ import com.sout.carcre.mapper.bean.UserInfo;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.RankService;
 import com.sout.carcre.service.TestService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sout.carcre.controller.bean.beanson.UserData;
 import com.sout.carcre.mapstruct.Do2Vo.UserInfor2Data;
@@ -75,20 +77,21 @@ public class HomeController {
         //查询每日任务情况 先切换到1号库
         RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(1);
         Map<String, String> map = new HashMap<>();
-        if (!template1.hasKey(userId)) {  //创建键值对
-            map.put("isSign", "0");
-            map.put("signNum", "0");
-            map.put("shareNum", "0");
-            map.put("isTravel", "0");
+        if (!template1.hasKey(userId)) {
+            DailyTask dailyTask=new DailyTask();
+            map=Bean2Map.transBean2Map(dailyTask);
             template1.opsForHash().putAll(userId, map);
         }
-        if (Objects.equals(template1.opsForHash().get(userId, "isSign"), 0))
+        System.out.println(template1.opsForHash().get(userId, "isSign"));
+        if (Objects.equals(template1.opsForHash().get(userId, "isSign"), "0"))
             template1.opsForHash().increment(userId, "signNum", 1);
         //数据转为json
         returnJson.put("userData", JSONObject.toJSON(userInfo));
         returnJson.put("signData", template1.opsForHash().entries(userId));
+
         //获取到全部信息后再将是否签到设置为1
         template1.opsForHash().put(userId,"isSign","1");
+
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
         return RetResponse.makeOKRsp(homePage);
@@ -124,13 +127,6 @@ public class HomeController {
         return RetResponse.makeOKRsp(rankService.getRankWeekly(userInfoMapper.selectUserInfoByUserId(userId)));
     }
 
-    /*请求每日任务数据*/
-    @RequestMapping("/dailytask")
-    @ResponseBody
-    public Result<DailyTask> dailytask() {
-        DailyTask dailyTask = new DailyTask();
-        return RetResponse.makeOKRsp(dailyTask);
-    }
 
     /*用户查看消息列表*/
     @RequestMapping("/simple_message")
@@ -146,6 +142,11 @@ public class HomeController {
         return RetResponse.makeOKRsp(messageListMapper.selectMessageById(Integer.parseInt(messageId)));
     }
 
-
+    @RequestMapping("/dailytask")
+    @ResponseBody
+    public Result<Map> dailyTask (HttpServletResponse response, HttpServletRequest request) {
+        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(1);
+        return RetResponse.makeOKRsp(template1.opsForHash().entries("1"));
+    }
 
 }

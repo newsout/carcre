@@ -119,4 +119,10 @@
             user_chip_status=0
         </set>
     </update>
+
+<!--        public int updateIsMessageByMobilPhone();-->
+    <update id="updateIsMessageByMobilPhone">
+        update user_info set is_message=#{status}
+        where mobile_phone=#{mobilePhone}
+    </update>
 </mapper>
