@@ -1,5 +1,6 @@
 package com.sout.carcre.controller.bean;
 
+import com.sout.carcre.controller.bean.beanson.CardRoughInfo;
 import com.sout.carcre.controller.bean.beanson.ChipCase;
 import com.sout.carcre.controller.bean.beanson.UserForCard;
 import lombok.Data;
@@ -14,8 +15,8 @@ import java.util.List;
 @Data
 public class ChipCollCase {
 
-    /*用户基本信息*/
-    private UserForCard userForCard;
+    /*卡片收集情况*/
+    private CardRoughInfo cardRoughInfo;
 
     /*用户碎片收集情况*/
     private List<ChipCase> chipCaseList;

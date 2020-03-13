@@ -21,4 +21,10 @@
         where card_id=#{cardId}
     </select>
 
+    <!--        public CardFewInfo selectCardFewInfoByCardId(String cardId);-->
+    <select id="selectCardFewInfoByCardId"  resultType="com.sout.carcre.service.bean.CardFewInfo">
+        select card_height,card_describe from card_info
+        where card_id=#{cardId}
+    </select>
+
 </mapper>

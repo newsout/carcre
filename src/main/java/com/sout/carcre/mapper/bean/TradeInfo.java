@@ -21,11 +21,12 @@ public class TradeInfo {
     private Integer tradeIsPost;
     private Integer tradeIsSell;
     private String tradePic;
+    private String tradeContent;//商品描述信息
     private Timestamp createTime;
 
     public TradeInfo(){}
 
-    public TradeInfo(long id, Integer tradeId, String tradeName, double tradePrice, Integer tradeNum, Integer tradeSto, Integer tradeGrade, Integer tradeIsPost, Integer tradeIsSell, String tradePic, Timestamp createTime) {
+    public TradeInfo(long id, Integer tradeId, String tradeName, double tradePrice, Integer tradeNum, Integer tradeSto, Integer tradeGrade, Integer tradeIsPost, Integer tradeIsSell, String tradePic, String tradeContent, Timestamp createTime) {
         this.id = id;
         this.tradeId = tradeId;
         this.tradeName = tradeName;
@@ -36,6 +37,7 @@ public class TradeInfo {
         this.tradeIsPost = tradeIsPost;
         this.tradeIsSell = tradeIsSell;
         this.tradePic = tradePic;
+        this.tradeContent = tradeContent;
         this.createTime = createTime;
     }
 
@@ -117,6 +119,14 @@ public class TradeInfo {
 
     public void setTradePic(String tradePic) {
         this.tradePic = tradePic;
+    }
+
+    public String getTradeContent() {
+        return tradeContent;
+    }
+
+    public void setTradeContent(String tradeContent) {
+        this.tradeContent = tradeContent;
     }
 
     public Timestamp getCreateTime() {

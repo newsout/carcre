@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,10 +37,13 @@ public class TradeService {
         List<TradeData> list1= new ArrayList<>();
         for(TradeInfo tradeInfo:list){
             //商品库存量大于0时返回前端
-            if(tradeInfo.getTradeSto()>0)
-            list1.add(Tradeinfo2Data.INSTANCE.tradeInfo2Data(tradeInfo));
+            if(tradeInfo.getTradeSto()>0){
+                TradeData tradeData=Tradeinfo2Data.INSTANCE.tradeInfo2Data(tradeInfo);
+                String[] tradePicList=tradeInfo.getTradePic().split(",");
+                tradeData.setTradePicList(Arrays.asList(tradePicList));
+                list1.add(tradeData);
+            }
         }
-
         shopPage.setTradeDataList(list1);
         //查询用户现有的碳积分数目
         int grade=userInfoMapper.selectExistGradebyUserId(Integer.parseInt(userId));

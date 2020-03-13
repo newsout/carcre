@@ -2,6 +2,8 @@ package com.sout.carcre.controller.bean.beanson;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 商品信息数据（单条）
  */
@@ -11,7 +13,7 @@ public class TradeData {
     private Integer tradeId;
 
     /*商品图片路径*/
-    private String tradePic;
+    private List<String> tradePicList;
 
     /*商品名称*/
     private String tradeName;
@@ -25,15 +27,19 @@ public class TradeData {
     /*商品库存量*/
     private int tradeSto;
 
+    /*商品描述信息*/
+    private String tradeContent;
+
     public TradeData(){}
 
-    public TradeData(Integer tradeId, String tradePic, String tradeName, double tradePrice, Integer tradeHeight, int tradeNum, int tradeSto) {
+    public TradeData(Integer tradeId, List<String> tradePicList, String tradeName, Integer tradeHeight, int tradeNum, int tradeSto, String tradeContent) {
         this.tradeId = tradeId;
-        this.tradePic = tradePic;
+        this.tradePicList = tradePicList;
         this.tradeName = tradeName;
         this.tradeHeight = tradeHeight;
         this.tradeNum = tradeNum;
         this.tradeSto = tradeSto;
+        this.tradeContent = tradeContent;
     }
 
     public Integer getTradeId() {
@@ -44,12 +50,12 @@ public class TradeData {
         this.tradeId = tradeId;
     }
 
-    public String getTradePic() {
-        return tradePic;
+    public List<String> getTradePicList() {
+        return tradePicList;
     }
 
-    public void setTradePic(String tradePic) {
-        this.tradePic = tradePic;
+    public void setTradePicList(List<String> tradePicList) {
+        this.tradePicList = tradePicList;
     }
 
     public String getTradeName() {
@@ -82,5 +88,13 @@ public class TradeData {
 
     public void setTradeSto(int tradeSto) {
         this.tradeSto = tradeSto;
+    }
+
+    public String getTradeContent() {
+        return tradeContent;
+    }
+
+    public void setTradeContent(String tradeContent) {
+        this.tradeContent = tradeContent;
     }
 }

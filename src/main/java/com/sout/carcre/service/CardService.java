@@ -4,10 +4,7 @@ import com.sout.carcre.controller.bean.CardPage;
 import com.sout.carcre.controller.bean.ChipCollCase;
 import com.sout.carcre.controller.bean.QueryChip;
 import com.sout.carcre.controller.bean.SynCard;
-import com.sout.carcre.controller.bean.beanson.ChipCase;
-import com.sout.carcre.controller.bean.beanson.ChipInfo;
-import com.sout.carcre.controller.bean.beanson.ChipNum;
-import com.sout.carcre.controller.bean.beanson.UserForCard;
+import com.sout.carcre.controller.bean.beanson.*;
 import com.sout.carcre.mapper.*;
 import com.sout.carcre.mapper.bean.GradeList;
 import com.sout.carcre.mapper.bean.UserInfo;
@@ -325,12 +322,14 @@ public class CardService {
         }
         chipCollCase.setChipCaseList(list);
         /*获取用户信息*/
-        UserForCard userForCard=new UserForCard();
+        CardRoughInfo cardRoughInfo=new CardRoughInfo();
         int cardAllnum=cardNumBycardId(userInfo.getUserCard(),cardId);
-        userForCard.setNickName(userInfo.getNickname());
-        userForCard.setUserImagePath(userInfo.getUserImagePath());
-        userForCard.setCardAllNum(cardAllnum);
-        chipCollCase.setUserForCard(userForCard);
+        cardRoughInfo.setCardNum(cardAllnum);
+        //根据卡片ID查询卡片具体信息
+        CardFewInfo cardFewInfo = cardInfoMapper.selectCardFewInfoByCardId(Integer.parseInt(cardId));
+        cardRoughInfo.setCardDescribe(cardFewInfo.getCardDescribe());
+        cardRoughInfo.setCardHeight(cardFewInfo.getCardHeight());
+        chipCollCase.setCardRoughInfo(cardRoughInfo);
 
         /*判断用户是否有卡片合成*/
         boolean cardIsSyn=(list.size()==9);

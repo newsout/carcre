@@ -16,5 +16,6 @@ public class CardInfo {
     private String cardContent;
     private String cardPath;
     private Integer cardIsUsable;
+    private String cardDescribe;//卡片描述信息
     private String createTime;
 }
