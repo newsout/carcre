@@ -15,4 +15,7 @@ public class UserPur {
 
     /*用户现阶段拥有的积分总数*/
     private int userAllGrade;
+
+    /*商品现有的库存量*/
+    private int tradeSto;
 }

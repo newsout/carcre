@@ -17,5 +17,6 @@ public class CardInfo {
     private String cardPath;
     private Integer cardIsUsable;
     private String cardDescribe;//卡片描述信息
+    private String cardLimit;//卡片限时操作
     private String createTime;
 }

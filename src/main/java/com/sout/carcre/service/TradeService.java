@@ -13,8 +13,10 @@ import com.sout.carcre.service.bean.TradeSell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +41,11 @@ public class TradeService {
             //商品库存量大于0时返回前端
             if(tradeInfo.getTradeSto()>0){
                 TradeData tradeData=Tradeinfo2Data.INSTANCE.tradeInfo2Data(tradeInfo);
+                //判断是否再限时日期内
+                String tradeDate=tradeData.getTradeLimit();
+                if(!"0".equals(tradeDate)){//限时卡片
+                   if(!compareTime(tradeDate)) continue;//在限定日期外不返回
+                }
                 String[] tradePicList=tradeInfo.getTradePic().split(",");
                 tradeData.setTradePicList(Arrays.asList(tradePicList));
                 list1.add(tradeData);
@@ -65,6 +72,9 @@ public class TradeService {
         //2、更新用户现有碳积分
         int userprocess=userInfoMapper.selectExistGradebyUserId(Integer.parseInt(userId));
         int newgrade=userprocess-tradeGrade;
+
+        //查询现阶段有的商品个数和销售量
+        TradeSell tradeSell=tradeInfoMapper.selectTradeStoAndNum(Integer.parseInt(tradeId));
         if(newgrade>=0){
             userInfoMapper.updateGradeByUserId(Integer.parseInt(userId),newgrade);
             //用户商品列表增加
@@ -77,17 +87,36 @@ public class TradeService {
             userPur.setUserAllGrade(newgrade);
 
             /*修改商城内的信息表*/
-            //查询现阶段有的商品个数和销售量
-            TradeSell tradeSell=tradeInfoMapper.selectTradeStoAndNum(Integer.parseInt(tradeId));
             int newNum=tradeSell.getTradeNum()+1;
             int newSto=tradeSell.getTradeSto()-1;
+            userPur.setTradeSto(newSto);
             //更新商品信息
             tradeInfoMapper.updateTradeStoAndNum(Integer.parseInt(tradeId),newNum,newSto);
         }else {
             userPur.setUserIssuccess(false);
             userPur.setUserAllGrade(userprocess);
+            userPur.setTradeSto(tradeSell.getTradeSto());
         }
         return userPur;
 
+    }
+
+    /**
+     * 判断时间是否超过当前时间
+     * @param time
+     * @return
+     */
+    public boolean compareTime(String time){
+        //获取当前时间
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        String presentTime=simpleDateFormat.format(new Date());
+        String[] limitTime=time.split("-");
+        String[] nowTime=presentTime.split("-");
+        for(int i=0;i<limitTime.length;i++){
+            int nowTimeData=Integer.parseInt(nowTime[i]);
+            int limitTimeData=Integer.parseInt(limitTime[i]);
+            if(nowTimeData<limitTimeData) return true;
+        }
+        return false;
     }
 }

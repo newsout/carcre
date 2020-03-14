@@ -20,6 +20,7 @@ public interface Tradeinfo2Data {
    @Mappings({
            @Mapping(source = "tradeName",target = "tradeName"),
            @Mapping(source = "tradeId",target = "tradeId"),
+           @Mapping(source = "tradeLimit",target = "tradeLimit"),
 //           @Mapping(source = "tradePic",target = "tradePic"),
            @Mapping(source = "tradeGrade",target = "tradeHeight")
    })

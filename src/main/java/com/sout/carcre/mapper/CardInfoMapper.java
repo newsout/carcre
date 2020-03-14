@@ -29,4 +29,7 @@ public interface CardInfoMapper {
     //根据卡片等级获取卡片等级以及卡片内容
     public CardFewInfo selectCardFewInfoByCardId(@Param("cardId") int cardId);
 
+    //根据卡片ID获取卡片限定日期
+    public String selectCardLimitByCardId(@Param("cardId") int cardId);
+
 }

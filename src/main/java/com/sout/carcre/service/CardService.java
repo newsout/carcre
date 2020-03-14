@@ -12,10 +12,8 @@ import com.sout.carcre.service.bean.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class CardService {
@@ -247,21 +245,31 @@ public class CardService {
                 num+=Integer.parseInt(chip[2]);
                 cardNum[chipindex++]=chip[2];//记录卡片中各碎片的收集情况
             }else if(i!=0){
-                ChipNum chipNum=new ChipNum();
-                //待合成的卡片个数
-                int realCardnum=realCardNum(cardNum);
-                //剔除卡片合成所有碎片后剩余的碎片数量
-                int realchipNum=notRepeatChip(cardNum,realCardnum);
-
-                chipNum.setChipNum(realchipNum);
-                chipNum.setCardNum(realCardnum);
+                boolean state=true;//标定是否可以将此卡片返回给用户
+                //判断当前卡片是否超过限定卡片日期,查询卡片限定日期
+                int cardId= Integer.parseInt(chipinfo[i].split(":")[0]);
+                String cardLimit=cardInfoMapper.selectCardLimitByCardId(cardId);
+                if(!"0".equals(cardLimit)){//为限定卡片
+                    if(!compareTime(cardLimit)) state=false;//卡片过期
+                }
+                if(state){
+                    //待合成的卡片个数
+                    int realCardnum=realCardNum(cardNum);
+                    //剔除卡片合成所有碎片后剩余的碎片数量
+                    int realchipNum=notRepeatChip(cardNum,realCardnum);
+                    ChipNum chipNum=new ChipNum();
+                    chipNum.setChipNum(realchipNum);
+                    chipNum.setCardNum(realCardnum);
+                    chipNum.setCardLimit(cardLimit);
+                    chipNum.setCardId(chipinfo[i].split(":")[0]);
+                    list.add(chipNum);
+                }
                 /*存储上一个ID值*/
                 i--;
-                chipNum.setCardId(chipinfo[i].split(":")[0]);
                 num=0;
                 chipindex=0;//开启新的卡片时，将记录卡片中各碎片数量的编号置为从头开始
                 guard=chip[0];
-                list.add(chipNum);
+
             }else{//特殊情况为当i为0，首个值时
                 i--;
                 guard=chip[0];
@@ -269,12 +277,21 @@ public class CardService {
         }
         /*存储最后一个卡片的信息*/
         ChipNum chipNum=new ChipNum();
-        int realCardnum=realCardNum(cardNum);
-        int realchipNum=notRepeatChip(cardNum,realCardnum);
-        chipNum.setChipNum(realchipNum);
-        chipNum.setCardNum(realCardnum);
-        chipNum.setCardId(chipinfo[chipinfo.length-1].split(":")[0]);
-        list.add(chipNum);
+        int cardId= Integer.parseInt(chipinfo[chipinfo.length-1].split(":")[0]);
+        boolean state=true;
+        String cardLimit=cardInfoMapper.selectCardLimitByCardId(cardId);
+        if(!"0".equals(cardLimit)){//为限定卡片
+            if(!compareTime(cardLimit)) state=false;//卡片过期
+        }
+        if(state){
+            int realCardnum=realCardNum(cardNum);
+            int realchipNum=notRepeatChip(cardNum,realCardnum);
+            chipNum.setChipNum(realchipNum);
+            chipNum.setCardNum(realCardnum);
+            chipNum.setCardId(String.valueOf(cardId));
+            list.add(chipNum);
+        }
+
 
         /*存储用户数据*/
         UserForCard userForCard=new UserForCard();
@@ -568,5 +585,24 @@ public class CardService {
             }
         }
         return minNum;
+    }
+
+    /**
+     * 判断时间是否超过当前时间
+     * @param time
+     * @return
+     */
+    public boolean compareTime(String time){
+        //获取当前时间
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        String presentTime=simpleDateFormat.format(new Date());
+        String[] limitTime=time.split("-");
+        String[] nowTime=presentTime.split("-");
+        for(int i=0;i<limitTime.length;i++){
+            int nowTimeData=Integer.parseInt(nowTime[i]);
+            int limitTimeData=Integer.parseInt(limitTime[i]);
+            if(nowTimeData<limitTimeData) return true;
+        }
+        return false;
     }
 }
