@@ -125,4 +125,10 @@
         update user_info set is_message=#{status}
         where mobile_phone=#{mobilePhone}
     </update>
+
+<!--        public int updateIsMessageById(int id,int status);-->
+    <update id="updateIsMessageById">
+        update user_info set is_message=#{status}
+        where mobile_phone=#{id}
+    </update>
 </mapper>

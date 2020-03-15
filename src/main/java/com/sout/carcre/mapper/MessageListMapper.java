@@ -14,10 +14,13 @@ import java.util.List;
 @Mapper
 public interface MessageListMapper {
 
+    //查看消息列表
     public List<MessageList> selectSimpleMessageByUserId(Integer userId);
 
+    //查看消息详情
     public MessageList selectMessageById(Integer id);
 
+    //创建新消息
     public int insertMessage (MessageList messageList);
 
 }

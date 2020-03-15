@@ -36,9 +36,10 @@ public class RedisConfig {
     public void initRedisTemp() throws Exception{
         System.out.println("初始化开始");
         redisTemplateMap.put(0,redisTemplateObject(0)); //缓存排行榜信息
-        redisTemplateMap.put(1,redisTemplateObject(1)); //存储每日任务 考虑放入sql中
-        redisTemplateMap.put(2,redisTemplateObject(2)); //存储session
+        redisTemplateMap.put(1,redisTemplateObject(1)); //缓存周排行榜信息
+        redisTemplateMap.put(2,redisTemplateObject(2)); //缓存每日任务
         redisTemplateMap.put(3,redisTemplateObject(3));
+        redisTemplateMap.put(15,redisTemplateObject(15)); //session
         System.out.println("初始化结束");
     }
     public RedisTemplate<String, Object> getRedisTemplateByDb(int db){

@@ -236,7 +236,7 @@ public class CardService {
         int num=0;
 
         /*标定一张卡片中各碎片的收集情况*/
-        String[] cardNum=new String[9];
+        String[] cardNum=new String[12];
         int chipindex=0;//表示当前在卡片收集情况数组中的位置
 
         for(int i=0;i<chipinfo.length;i++){

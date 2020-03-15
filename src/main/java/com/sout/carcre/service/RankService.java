@@ -51,7 +51,7 @@ public class RankService {
     }
 
     public List<RankData> getRankData(UserInfo userInfo) {
-        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(0);
+        RedisTemplate<String, Object> template = redisConfig.getRedisTemplateByDb(0);
         List<RankData> rankDataList = new ArrayList<>();
         RankData rankData = JSONObject.parseObject(JSONObject.toJSONString(userInfo), RankData.class);
         rankData.setAllValue(rankData.getHighNum() * 3 + rankData.getMediumNum() * 2 + rankData.getLowNum());
@@ -69,34 +69,52 @@ public class RankService {
                 UserInfo friendInfo = userInfoMapper.selectUserInfoByMobilPhone(friendList[i]);
                 rankData = JSONObject.parseObject(JSONObject.toJSONString(friendInfo), RankData.class);
                 template.opsForHash().put(key, item, JSONObject.toJSONString(rankData));
-                rankData.setAllValue(rankData.getHighNum() * 3 + rankData.getMediumNum() * 2 + rankData.getLowNum());
                 rankDataList.add(rankData);
             } else {
                 rankData = JSONObject.parseObject((String) template.opsForHash().get(key, item), RankData.class);
-                rankData.setAllValue(rankData.getHighNum() * 3 + rankData.getMediumNum() * 2 + rankData.getLowNum());
                 rankDataList.add(rankData);
             }
         }
 
         //排序
         rankDataList.sort((r1, r2) -> Integer.compare(r2.getUserGradeAll(), r1.getUserGradeAll()));
-        for (int i = 0; i < rankDataList.size(); i++) {
-            rankDataList.get(i).setUserRank(i + 1);
-        }
-
+        for (int i = 0; i < rankDataList.size(); i++) rankDataList.get(i).setUserRank(i + 1);
         return rankDataList;
     }
 
-    public List<RankWeekly> getRankWeekly(UserInfo userInfo){
-        List<RankWeekly> rankWeeklyList=new ArrayList<>();
+    public List<RankWeekly> getRankWeekly(UserInfo userInfo) {
+        RedisTemplate<String, Object> template = redisConfig.getRedisTemplateByDb(1);
+        List<RankWeekly> rankWeeklyList = new ArrayList<>();
+        RankWeekly rankWeekly = rankWeeklyMapper.selectDataByMobilPhone(userInfo.getMobilePhone());
+        rankWeeklyList.add(rankWeekly);
+        String key = userInfo.getMobilePhone().substring(0, userInfo.getMobilePhone().length() - 4);
+        String item = userInfo.getMobilePhone().substring(userInfo.getMobilePhone().length() - 4);
+        template.opsForHash().put(key, item, JSONObject.toJSONString(rankWeekly));
         //在查询好友列表
         String[] friendList = userInfo.getUserFriend().split(",");
         for (int i = 0; i < friendList.length; i++) {
-            RankWeekly rankWeekly=rankWeeklyMapper.selectDataByMobilPhone(friendList[i]);
-            if (rankWeekly!=null)rankWeeklyList.add(rankWeekly);
+            key = friendList[i].substring(0, friendList[i].length() - 4);
+            item = friendList[i].substring(friendList[i].length() - 4);
+            if (template.opsForHash().get(key, item) == null) {
+                rankWeekly = rankWeeklyMapper.selectDataByMobilPhone(friendList[i]);
+                if (rankWeekly != null) {
+                    rankWeeklyList.add(rankWeekly);
+                    template.opsForHash().put(key, item, JSONObject.toJSONString(rankWeekly));
+                }
+            } else {
+                rankWeekly = JSONObject.parseObject((String) template.opsForHash().get(key, item), RankWeekly.class);
+                rankWeeklyList.add(rankWeekly);
+            }
         }
-        rankWeeklyList.add(rankWeeklyMapper.selectDataByMobilPhone(userInfo.getMobilePhone()));
-        rankWeeklyList.sort((r1,r2)->Integer.compare(r2.getGradeNum(),r1.getCollNum()));
+        //排序
+        rankWeeklyList.sort((r1, r2) -> Integer.compare(r2.getGradeNum(), r1.getCollNum()));
+        //给rankNum赋值
+        for (int i = 0; i < rankWeeklyList.size(); i++) rankWeeklyList.get(i).setRankNum(i + 1);
+        for (int i = 0; i < rankWeeklyList.size(); i++)
+            if (rankWeeklyList.get(i).getMobilePhone().equals(userInfo.getMobilePhone())) {
+                rankWeekly = rankWeeklyList.remove(i);
+                rankWeeklyList.add(0, rankWeekly);
+            }
         return rankWeeklyList;
     }
 

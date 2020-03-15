@@ -1,5 +1,6 @@
 package com.sout.carcre.integration.handler;
 
+import com.sout.carcre.controller.bean.DailyTask;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,11 @@ import java.util.Map;
 /**
  * Created by lzw on 2020/3/10.
  */
-public class Bean2Map {
+public class BeanAndMap {
 
     //JavaBean转成Map<String,Object>
 //测试已通过，Bean中包含另一个Bean成员也可以
-    public static Map<String, String> transBean2Map(Object obj) {
+    public static Map<String, String> Bean2Map(Object obj) {
 
         if (obj == null) {
             return null;
@@ -41,8 +42,7 @@ public class Bean2Map {
             e.printStackTrace();
             return null;
         }
-
         return map;
-
     }
+
 }

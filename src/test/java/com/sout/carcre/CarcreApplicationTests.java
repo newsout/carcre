@@ -2,13 +2,12 @@ package com.sout.carcre;
 
 import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.integration.redis.RedisConfig;
+import com.sout.carcre.mapper.CardInfoMapper;
 import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.UserInfo;
-import com.sout.carcre.service.MainService;
-import com.sout.carcre.service.MessageService;
-import com.sout.carcre.service.RankService;
+import com.sout.carcre.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,11 +38,16 @@ class CarcreApplicationTests {
     MessageService messageService;
     @Autowired
     RedisConfig redisConfig;
+    @Autowired
+    CardInfoMapper cardInfoMapper;
+    @Autowired
+    CardService cardService;
+    @Autowired
+    DailyTaskService dailyTaskService;
 
     @Test
     void contextLoads() throws IOException {
-
-
+        dailyTaskService.increaseShareNum(1);
     }
 
 }

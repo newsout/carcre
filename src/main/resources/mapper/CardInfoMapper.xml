@@ -21,6 +21,17 @@
         where card_id=#{cardId}
     </select>
 
+<<<<<<< HEAD
+<!--        public int cardNum();-->
+    <select id="cardNum" resultType="integer">
+        select count(id) from card_info where card_is_usable=1
+    </select>
+
+<!--    public List<Integer> cardUsableId();-->
+    <select id="cardUsableId" resultType="integer">
+        select card_id from card_info where card_is_usable=1
+    </select>
+=======
     <!--            public String selectCardLimitByCardId(@Param("cardId") int cardId);-->
     <select id="selectCardLimitByCardId"  resultType="java.lang.String">
         select card_limit from card_info
@@ -33,4 +44,5 @@
         where card_id=#{cardId}
     </select>
 
+>>>>>>> 1df2f351eb027fc15aedff4106b08cb466e8144f
 </mapper>

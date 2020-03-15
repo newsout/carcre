@@ -6,6 +6,7 @@ import com.sout.carcre.service.bean.ChipFromCard;
 import org.apache.coyote.OutputBuffer;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -26,10 +27,18 @@ public interface CardInfoMapper {
     //根据卡片ID获取卡片对应的碳积分
     public int selectGradeBycardId(@Param("cardId") int cardId);
 
+<<<<<<< HEAD
+    //统计所有可用卡片个数
+    public int cardNum();
+
+    //获取可用卡片id
+    public List<Integer> cardUsableId();
+=======
     //根据卡片等级获取卡片等级以及卡片内容
     public CardFewInfo selectCardFewInfoByCardId(@Param("cardId") int cardId);
 
     //根据卡片ID获取卡片限定日期
     public String selectCardLimitByCardId(@Param("cardId") int cardId);
 
+>>>>>>> 1df2f351eb027fc15aedff4106b08cb466e8144f
 }

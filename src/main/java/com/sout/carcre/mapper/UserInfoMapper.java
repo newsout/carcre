@@ -63,4 +63,6 @@ public interface UserInfoMapper {
 
     public int updateIsMessageByMobilPhone(String mobilePhone,int status);
 
+    public int updateIsMessageById(int id,int status);
+
 }

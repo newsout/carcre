@@ -25,6 +25,7 @@ public class RankData {
     /*低等级卡片收集个数*/
     private int lowNum;
 
-    //卡片权值 便于排序
+    //卡片权值 便于排序  废弃
     private int allValue;
+
 }

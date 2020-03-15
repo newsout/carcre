@@ -1,30 +1,23 @@
 package com.sout.carcre.controller;
 
-import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson.JSONObject;
 import com.sout.carcre.controller.bean.DailyTask;
 import com.sout.carcre.controller.bean.HomePage;
-import com.sout.carcre.controller.bean.MessageData;
-import com.sout.carcre.controller.bean.beanson.RankData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
-import com.sout.carcre.integration.handler.Bean2Map;
+import com.sout.carcre.integration.handler.BeanAndMap;
 import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.integration.redis.RedisConfig;
+import com.sout.carcre.mapper.CardInfoMapper;
 import com.sout.carcre.mapper.MessageListMapper;
 import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
-import com.sout.carcre.mapper.bean.MessageList;
-import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
+import com.sout.carcre.service.DailyTaskService;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.RankService;
 import com.sout.carcre.service.TestService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.sout.carcre.controller.bean.beanson.UserData;
-import com.sout.carcre.mapstruct.Do2Vo.UserInfor2Data;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 首页页面
@@ -59,6 +49,8 @@ public class HomeController {
     TestService testService;
     @Autowired
     RedisConfig redisConfig;
+    @Autowired
+    CardInfoMapper cardInfoMapper;
 
     /*首页请求数据*/
     @RequestMapping("/homepage")
@@ -68,18 +60,17 @@ public class HomeController {
         JSONObject returnJson = new JSONObject();
         //获取用户信息
         UserInfo userInfo = userInfoMapper.selectUserInfoByUserId(Integer.parseInt(userId));
-        if (userInfo == null) {
-            //通过八维通获取数据
+        if (userInfo == null) { //注册新用户
             userInfo = mainService.getUserInfoByBWT(Integer.parseInt(userId));
             userInfoMapper.insertUserInfo(userInfo);
             rankWeeklyMapper.insertRankWeeklyData(userInfo);
         }
         //查询每日任务情况 先切换到1号库
-        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(1);
+        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(2);
         Map<String, String> map = new HashMap<>();
         if (!template1.hasKey(userId)) {
             DailyTask dailyTask=new DailyTask();
-            map=Bean2Map.transBean2Map(dailyTask);
+            map= BeanAndMap.Bean2Map(dailyTask);
             template1.opsForHash().putAll(userId, map);
         }
         System.out.println(template1.opsForHash().get(userId, "isSign"));
@@ -88,10 +79,17 @@ public class HomeController {
         //数据转为json
         returnJson.put("userData", JSONObject.toJSON(userInfo));
         returnJson.put("signData", template1.opsForHash().entries(userId));
-
         //获取到全部信息后再将是否签到设置为1
         template1.opsForHash().put(userId,"isSign","1");
 
+        //返回卡片信息
+        List<Integer> cardIds=cardInfoMapper.cardUsableId();
+        returnJson.put("cardAllNum",cardIds.size());
+        String[] cardCollInfos= userInfo.getUserCard().split(",");
+        int count=0;
+        for (String cardCollInfo : cardCollInfos)
+            if (cardIds.contains(Integer.parseInt(cardCollInfo.split(":")[0]))) count++;
+        returnJson.put("cardCollNum",count);
         /*jsonobject转javabean*/
         HomePage homePage = JSONObject.parseObject(String.valueOf(returnJson), HomePage.class);
         return RetResponse.makeOKRsp(homePage);
@@ -110,43 +108,16 @@ public class HomeController {
         return RetResponse.makeOKRsp(reJson);
     }
 
-    /*请求总排行榜数据*/
-    @RequestMapping("/rankdata")
-    @ResponseBody
-    public Result<List<RankData>> rankdata(HttpServletRequest request, HttpServletResponse response) {
-        Integer userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
-        List<RankData> list = new ArrayList<>(rankService.getRankData(userInfoMapper.selectUserInfoByUserId(userId)));
-        return RetResponse.makeOKRsp(list);
-    }
 
-    /*请求每周排行榜数据*/
-    @RequestMapping("/rankweeklydata")
-    @ResponseBody
-    public Result<List<RankWeekly>> rankweeklydata(HttpServletRequest request, HttpServletResponse response) {
-        int userId = Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
-        return RetResponse.makeOKRsp(rankService.getRankWeekly(userInfoMapper.selectUserInfoByUserId(userId)));
-    }
-
-
-    /*用户查看消息列表*/
-    @RequestMapping("/simple_message")
-    @ResponseBody
-    public Result<List<MessageList>> simpleMessage(HttpServletResponse response, HttpServletRequest request) {
-        int userId=Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
-        return RetResponse.makeOKRsp(messageListMapper.selectSimpleMessageByUserId(userId));
-    }
-
-    @RequestMapping("/message")
-    @ResponseBody
-    public Result<MessageList> message(@RequestParam("message_id") String messageId, HttpServletResponse response, HttpServletRequest request) {
-        return RetResponse.makeOKRsp(messageListMapper.selectMessageById(Integer.parseInt(messageId)));
-    }
+    @Autowired
+    DailyTaskService dailyTaskService;
 
     @RequestMapping("/dailytask")
     @ResponseBody
     public Result<Map> dailyTask (HttpServletResponse response, HttpServletRequest request) {
-        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(1);
-        return RetResponse.makeOKRsp(template1.opsForHash().entries("1"));
+        Integer userId = new Integer(sessionHandler.getSession(request, response, "userId"));
+        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(2);
+        return RetResponse.makeOKRsp(template.opsForHash().entries(userId.toString()));
     }
 
 }

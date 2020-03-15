@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 public class RankWeekly {
     private Integer id;
     private Integer userId;
+    private Integer rankNum;
     private String mobilePhone;
     private String nickname;
     private Integer gradeNum;

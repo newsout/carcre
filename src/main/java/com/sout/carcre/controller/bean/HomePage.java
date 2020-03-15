@@ -18,6 +18,6 @@ public class HomePage {
     /*签到信息*/
     private SignData signData;
 
-    /*判断是否有消息*/
-    private boolean message;
+    private Integer cardAllNum;
+    private Integer cardCollNum;
 }

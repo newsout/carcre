@@ -17,14 +17,14 @@ public class MessageService {
     @Autowired
     MessageListMapper messageListMapper;
 
-    private String[] messageContent = {"测试测试测试测试测试测试测试测试测试", "测试2测试2测试2测试2测试2测试2测试2测试2测试2"};
+    private String[] messageContent = {"你的好友XXX的消息测试测试测试测试测试测试测试测试测试", "你的好友XXX的消息测试2测试2测试2测试2测试2测试2测试2测试2测试2"};
 
     //推送消息
     public void pushPersonalMessage(UserInfo userInfo, Integer contentIndex) {
         String[] friendList = userInfo.getUserFriend().split(",");
         for (String friend : friendList) {
             MessageList messageList = new MessageList(userInfoMapper.selectUserInfoByMobilPhone(friend).getUserId(), userInfo.getUserId(),
-                    messageContent[contentIndex], messageContent[contentIndex].substring(0, 10));
+                    messageContent[contentIndex].replace("XXX",userInfo.getNickname()), messageContent[contentIndex].replace("XXX",userInfo.getNickname()).substring(0, 10));
             messageListMapper.insertMessage(messageList);
             userInfoMapper.updateIsMessageByMobilPhone(friend,1);//更新好友message状态
         }

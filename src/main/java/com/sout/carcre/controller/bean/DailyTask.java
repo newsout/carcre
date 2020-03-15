@@ -13,8 +13,6 @@ public class DailyTask {
 
     private int isSign;
 
-    /*用户是否分享*/
-    private int userIsShare;
 
     /*用户是否出行*/
     private int userIsGo;
