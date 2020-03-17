@@ -11,6 +11,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.expression.Maps;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +64,16 @@ public class MainService {
         System.out.println(jsonArray);
         /*jsonarray装List<bean>*/
         List<BaseTripResult> list=JSONObject.parseArray(jsonArray.toJSONString(),BaseTripResult.class);
-        System.out.println(list);
+        //判断行程最后一次时间范围是否为今天
+//        int index=-1;//标定今天第一行程的标号
+//        for(int i=list.size()-1;i>=0;i++){
+//            String inTime=list.get(i).getInTime().split(" ")[1];//判断开始时间是否为今天
+//            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy/MM/dd");
+//            if(!simpleDateFormat.format(new Date()).equals(inTime)) {
+//                index=i+1;break;
+//            }
+//        }
+//        if(index==-1) return null;
         return list.get(list.size()-1);
 
     }

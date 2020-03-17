@@ -17,6 +17,7 @@ import com.sout.carcre.service.DailyTaskService;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.RankService;
 import com.sout.carcre.service.TestService;
+import com.sout.carcre.service.bean.interfacebean.BaseTripResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -112,11 +113,24 @@ public class HomeController {
     @Autowired
     DailyTaskService dailyTaskService;
 
+
     @RequestMapping("/dailytask")
     @ResponseBody
     public Result<Map> dailyTask (HttpServletResponse response, HttpServletRequest request) {
         Integer userId = new Integer(sessionHandler.getSession(request, response, "userId"));
         RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(2);
+        String userStatus= (String) template.opsForHash().get(String.valueOf(userId),"userIsGo");
+        if(userStatus==null||userStatus.equals("0")){//没有存储或者存储了但是没有完成里程
+            BaseTripResult baseTripResult = mainService.baseTriplist(userId);
+            String status = baseTripResult.getStatus();//获取行程信息的状态
+            if(status.equals("3")){//已经完成行程
+                template.opsForHash().put(String.valueOf(userId),"userIsGo","1");
+                template.opsForHash().put(String.valueOf(userId),"userGoNum",String.valueOf(baseTripResult.getMileage()));
+            }else {//没有里程信息
+                template.opsForHash().put(String.valueOf(userId),"userIsGo","0");
+                template.opsForHash().put(String.valueOf(userId),"userGoNum","0");
+            }
+        }
         return RetResponse.makeOKRsp(template.opsForHash().entries(userId.toString()));
     }
 

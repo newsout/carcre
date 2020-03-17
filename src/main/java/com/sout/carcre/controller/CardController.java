@@ -9,11 +9,13 @@ import com.sout.carcre.controller.bean.beanson.ChipNum;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
+import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.service.CardService;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.bean.interfacebean.BaseTripResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,8 @@ public class CardController {
     MainService mainService;
     @Autowired
     UserInfoMapper userInfoMapper;
+    @Autowired
+    RedisConfig redisConfig;
 
     /*用户获取随机卡片*/
     @RequestMapping("/querychip")
@@ -51,30 +55,22 @@ public class CardController {
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
         //1、判断是否完成里程
-        BaseTripResult basetrip=mainService.baseTriplist(Integer.parseInt(userId));
+        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(2);
+        String status= (String) template.opsForHash().get(String.valueOf(userId),"userIsGo");
         //当用户行程状态为已经付款时
-        if(basetrip.getStatus().equals("3")){
+        if(status.equals("1")){//说明已经完成出行但是没有抽取卡片
             //判断用户是否已经领取过碎片
-            int chipStatus=userInfoMapper.selectChipStatusByUserId(Integer.parseInt(userId));
-            if(chipStatus==0){
-                QueryChip queryChip= cardService.querychip(userId,basetrip.getMileage());
-                //更新用户领取碎片信息
-//                userInfoMapper.updateChipStatusByUserId(Integer.parseInt(userId));
-
-                //设置数据库用户获取碎片标识为0（方便前端测试,实际没有）
-//                userInfoMapper.updateChipStatus0ByuserId(Integer.parseInt(userId));
-
+                String mileage=String.valueOf(template.opsForHash().get(String.valueOf(userId),"userGoNum"));
+                QueryChip queryChip= cardService.querychip(userId,Integer.parseInt(mileage));
+                template.opsForHash().put(String.valueOf(userId),"userIsGo","-1");
                 //返回成功标识
                 return RetResponse.makeRspCode(code,queryChip,"");
-            }else{
-                //已经领取过碎片
-                code=0;
-                return RetResponse.makeRspCode(code,null,"您已领取过碎片");
-            }
-
-        }else{ //用户未完成本次行程
+        }else if(status.equals("0")){ //用户未完成本次行程
             code=0;
             return RetResponse.makeRspCode(code,null,"");
+        }else {
+            code=0;
+            return RetResponse.makeRspCode(code,null,"您已领取过碎片");
         }
 
     }

@@ -13,9 +13,11 @@ public class DailyTask {
 
     private int isSign;
 
-
     /*用户是否出行*/
     private int userIsGo;
+
+    /*用户行程数*/
+    private int userGoNum;
 
     /*用户是否浏览卡片界面*/
     private int userIsScan;

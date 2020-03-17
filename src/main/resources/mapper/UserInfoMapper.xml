@@ -48,11 +48,11 @@
         where user_id=#{userId}
     </select>
 
-    <!--       public int selectChipStatusByUserId(int userId);-->
-    <select id="selectChipStatusByUserId"  parameterType="integer" resultType="integer">
-        select user_chip_status from user_info
-        where user_id=#{userId}
-    </select>
+<!--    &lt;!&ndash;       public int selectChipStatusByUserId(int userId);&ndash;&gt;-->
+<!--    <select id="selectChipStatusByUserId"  parameterType="integer" resultType="integer">-->
+<!--        select user_chip_status from user_info-->
+<!--        where user_id=#{userId}-->
+<!--    </select>-->
 
 <!--         public int updateChipInfoByuserId(int userId,String chipinfo);-->
     <update id="updateChipInfoByuserId" parameterType="map">
@@ -93,32 +93,32 @@
         where user_id=#{userId,jdbcType=BIGINT}
     </update>
 
-    <!--        public int updateChipStatusByUserId(int userId);-->
-    <update id="updateChipStatusByUserId" parameterType="INTEGER">
-        update user_info
-        <set>
-            user_chip_status=1
-        </set>
-        where user_id=#{userId,jdbcType=BIGINT}
-    </update>
+<!--    &lt;!&ndash;        public int updateChipStatusByUserId(int userId);&ndash;&gt;-->
+<!--    <update id="updateChipStatusByUserId" parameterType="INTEGER">-->
+<!--        update user_info-->
+<!--        <set>-->
+<!--            user_chip_status=1-->
+<!--        </set>-->
+<!--        where user_id=#{userId,jdbcType=BIGINT}-->
+<!--    </update>-->
 
-    <!--         public int updateChipStatus0ByuserId(@Param("userId")int userId);-->
-    <update id="updateChipStatus0ByuserId" parameterType="INTEGER">
-        update user_info
-        <set>
-            user_chip_status=0
-        </set>
-        where user_id=#{userId,jdbcType=BIGINT}
-    </update>
+<!--    &lt;!&ndash;         public int updateChipStatus0ByuserId(@Param("userId")int userId);&ndash;&gt;-->
+<!--    <update id="updateChipStatus0ByuserId" parameterType="INTEGER">-->
+<!--        update user_info-->
+<!--        <set>-->
+<!--            user_chip_status=0-->
+<!--        </set>-->
+<!--        where user_id=#{userId,jdbcType=BIGINT}-->
+<!--    </update>-->
 
 
-    <!--        public int updateChipStatusByDay();-->
-    <update id="updateChipStatusByDay">
-        update user_info
-        <set>
-            user_chip_status=0
-        </set>
-    </update>
+<!--    &lt;!&ndash;        public int updateChipStatusByDay();&ndash;&gt;-->
+<!--    <update id="updateChipStatusByDay">-->
+<!--        update user_info-->
+<!--        <set>-->
+<!--            user_chip_status=0-->
+<!--        </set>-->
+<!--    </update>-->
 
 <!--        public int updateIsMessageByMobilPhone();-->
     <update id="updateIsMessageByMobilPhone">
