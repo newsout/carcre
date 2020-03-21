@@ -32,16 +32,13 @@ public class CardService {
     /**
      * 随机获取碎片
      * @param userId
-     * @param mileage
+     * @param height 卡片等级数
      * @return
      */
-    public QueryChip querychip(String userId,int mileage){
+    public QueryChip querychip(String userId,int height){
 
         /*返回数据*/
         QueryChip queryChip=new QueryChip();
-
-        //获得里程数对应的卡片等级
-        int height=cardHeightByMile(mileage);
 
         //根据等级获得碎片信息
         List<ChipFromCard> chiplist=cardInfoMapper.seleteChipByheight(height);
@@ -89,7 +86,7 @@ public class CardService {
 
         /*向数据库中插入用户获取随机碎片记录*/
         String chipid=chipFullInfo.getCardId()+":"+chipFullInfo.getChipId();
-        collListMapper.insertChipLogByCollList(Integer.parseInt(userId),chipid);
+        collListMapper.insertChipLogByCollList(Integer.parseInt(userId),chipid,1);
 
         /*更新周排行榜中的碎片数量*/
         //查询原有的碎片数量
@@ -160,7 +157,7 @@ public class CardService {
                 }else if(state==1) state=2;
             }else break;
         }
-        if(newchipnumber!=9){//5为碎片的总个数，判断此时是否可以合成
+        if(newchipnumber!=9){//9为碎片的总个数，判断此时是否可以合成
             return false;
         }
         /*拼接碎片信息，用于更新数据库*/
@@ -355,6 +352,179 @@ public class CardService {
     }
 
     /**
+     * 赠送碎片
+     * @param userId 赠送者ID
+     * @param recvId 接受者ID
+     * @param chipId 碎片ID
+     * @return 是否赠送成功
+     */
+    public boolean sendChip(String userId,String recvId,String chipId){
+        StringBuilder builder=new StringBuilder();
+        /*更新接受者的被赠送碎片信息*/
+        //取出接受者信息
+        int state=-1;
+        String newSendedInfo=userId+"&"+chipId;//拼接发送者信息
+        String newSended=newSendedInfo+"&1";
+        String sendedChip=userInfoMapper.selectSendedChipByUserId(Integer.parseInt(recvId));
+        if(sendedChip!=null&& !sendedChip.equals("")){
+            String[] recvChipInfo=sendedChip.split(",");
+            state=ElemIsInArray(recvChipInfo,newSendedInfo);
+            //判断是否已经在列表中存在了
+            if(state!=-1){//说明已经存在，则需要更新数据
+                String[] data=recvChipInfo[state].split("&");
+                int sendedNum=Integer.parseInt(data[2])+1;
+                recvChipInfo[state]=data[0]+"&"+data[1]+"&"+sendedNum;
+            }else {//插入数据(中间插入或者尾部插入)
+                recvChipInfo=insertSendedArray(recvChipInfo,newSended);
+            }
+            //合并数据更新用户信息
+            for(int i=0;i<recvChipInfo.length;i++){
+                builder.append(recvChipInfo[i]).append(",");
+            }
+            userInfoMapper.updateSendedChipByUserId(Integer.parseInt(recvId),builder.toString());
+        }else {//否则直接插入
+            userInfoMapper.updateSendedChipByUserId(Integer.parseInt(recvId),newSended+",");
+        }
+
+        return true;
+    }
+    /**
+     * 接收碎片
+     * @param userId 接受者ID
+     * @param senderId 发送者ID
+     * @param chipId 碎片ID
+     * @return
+     */
+    public boolean recvChip(String userId,String senderId,String chipId){
+       /*将发送者的碎片减一*/
+        //取出发送者的碎片信息
+        updateChipInfo(senderId,chipId,1);
+        /*更新接受者信息*/
+        updateChipInfo(userId,chipId,0);
+        /*删除用户表中被赠送的信息*/
+        //查询用户被赠送信息
+        String[] sendedchipInfo=userInfoMapper.selectSendedChipByUserId(Integer.parseInt(userId)).split(",");
+
+        //遍历从用户表中删除此条被赠送的信息
+        for(int i=0;i<sendedchipInfo.length;i++){
+            String chip=senderId+"&"+chipId;
+            String[] chipDetail=sendedchipInfo[i].split("&");//考虑到会有朋友送相同的碎片很多次
+            String oldChipDetail=chipDetail[0]+"&"+chipDetail[1];
+            if(oldChipDetail.equals(chip)){//删除或者更新
+                //判断数据是否为1
+                if(chipDetail[2].equals("1"))//说明应当删除
+                {
+                    sendedchipInfo= (String[]) deldataFromArray(sendedchipInfo,i);
+                }else {//减少其数量但是不删除
+                    int sendedNum=Integer.parseInt(chipDetail[2])-1;
+                    sendedchipInfo[i]=chipDetail[0]+"&"+chipDetail[1]+"&"+sendedNum;
+                }
+                break;
+            }
+        }
+        /*更新用户的被赠送碎片信息*/
+        StringBuilder stringBuilder=new StringBuilder();
+        for(int i=0;i<sendedchipInfo.length;i++){
+            stringBuilder.append(sendedchipInfo[i]).append(",");
+        }
+        //更新用户被赠送信息
+        userInfoMapper.updateSendedChipByUserId(Integer.parseInt(userId),stringBuilder.toString());
+
+        /*向数据库中插入碎片信息（记录）*/
+        collListMapper.insertChipLogByCollList(Integer.parseInt(userId),chipId,1);
+        collListMapper.insertChipLogByCollList(Integer.parseInt(senderId),chipId,0);
+        return true;
+    }
+
+    /**
+     * 插入赠送碎片数组
+     * @param array 数组id&chip&number
+     * @param sender 实际数据id&chip&number
+     * @return
+     */
+    public String[] insertSendedArray(String[] array,String sender){
+        String senderId=sender.split("&")[0];
+        int state=-1;
+        for(int i=0;i<array.length;i++){
+            String[] arrayData=array[i].split("&");
+            if(Integer.parseInt(arrayData[i])>=Integer.parseInt(senderId)){
+                state=i;break;
+            }
+        }
+        //插入到state位置
+        //数组扩容
+        int arrayOrLength=array.length;
+        array=(String[]) resizeArray(array,array.length+1);
+        if(state!=-1){//说明存在相同的ID或者应该执行插入,在state位置插入
+            for(int i=arrayOrLength;i>state;i--){
+                array[i]=array[i-1];
+            }
+            array[state]=sender;
+        }else {//在尾部执行插入操作
+            array[array.length-1]=sender;
+        }
+        return array;
+    }
+
+    /**
+     * 更新碎片信息
+     * @param userId 用户ID
+     * @param chipId 碎片ID 卡片ID:碎片编号形式
+     * @param type 接收还是发送 接收为0 发送为1
+     */
+    public void updateChipInfo(String userId,String chipId,int type){
+        StringBuilder stringBuilder=new StringBuilder();
+        String senderChip=userInfoMapper.selectChipInfoByUserId(Integer.parseInt(userId));
+        String[] sendData=senderChip.split(",");
+        int i=0;
+        for(;i<sendData.length;i++){
+            String[] sendArray=sendData[i].split(":");
+            String chipIdSql=sendArray[0]+":"+sendArray[1];
+            if(chipIdSql.equals(chipId)){//需要将其数量-1
+                int chipNum=Integer.parseInt(sendArray[2]);
+                if(type==1){//发送
+                    chipNum--;//减小发送者碎片数量
+                    if(chipNum==0){//如果碎片数量为0，则将其移出用户碎片列表（针对发送者）
+                        sendData= (String[]) deldataFromArray(sendData,i);
+                    }else
+                        sendData[i]=sendArray[0]+":"+sendArray[1]+":"+chipNum;
+                }else {//接收
+                    chipNum++;
+                    sendData[i]=sendArray[0]+":"+sendArray[1]+":"+chipNum;
+                }
+                break;//如果寻找到则退出循环，否则继续遍历
+            }
+        }
+        //判断是否遍历到，如果没有说明是新增的卡片（针对接收者）
+        if(i==sendData.length){//说明没有遍历到,需插入新的数据
+            String chipInfo=chipId+":1";
+            sendData=insertData(sendData,chipInfo);
+        }
+        //更新碎片信息
+        for(int j=0;j<sendData.length;j++){
+            stringBuilder.append(sendData[j]).append(",");
+        }
+        userInfoMapper.updateChipInfoByuserId(Integer.parseInt(userId),stringBuilder.toString());
+
+    }
+
+    /**
+     * 判断数组中是否存在此数据
+     * @param array 数组 1&2&3
+     * @param data 数据 1&2
+     * @return
+     */
+    public int ElemIsInArray(String[] array,String data){
+        for(int i=0;i<array.length;i++){
+            String[] arrayData=array[i].split("&");
+            String aDfront=arrayData[0]+"&"+arrayData[1];
+            if(aDfront.equals(data)){
+                return i;
+            }
+        }
+        return -1;
+    }
+    /**
      * 二分法查找数据
      * @param array 数组
      * @param left 数组左下标
@@ -387,19 +557,6 @@ public class CardService {
             arrays[i]=list1.get(i);
         }
         return arrays;
-    }
-
-    /**
-     * 里程数获得卡片等级
-     * @param mileage 里程数
-     * @return 卡片等级
-     */
-    public int cardHeightByMile(int mileage){
-        if(mileage<10){
-            return 1;
-        }else if(mileage<20){
-            return 2;
-        }else return 3;
     }
 
     /**

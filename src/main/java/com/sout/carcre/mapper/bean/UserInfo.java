@@ -37,6 +37,8 @@ public class UserInfo {
     private Integer isMessage;
     private Integer isNewcard;
 
+    private String sendChipId;//发送給用户碎片的好友列表
+
     //数据库没有的字段
     private int userRank;
 

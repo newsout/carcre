@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface CollListMapper {
 
     /*插入用户获得随机碎片记录*/
-    public int insertChipLogByCollList(@Param("userId") int userId, @Param("chipId")String chipId);
+    public int insertChipLogByCollList(@Param("userId") int userId,
+                                       @Param("chipId")String chipId,
+                                       @Param("collType")int collType);
 
 }

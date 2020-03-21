@@ -61,7 +61,9 @@ public class CardController {
         if(status.equals("1")){//说明已经完成出行但是没有抽取卡片
             //判断用户是否已经领取过碎片
                 String mileage=String.valueOf(template.opsForHash().get(String.valueOf(userId),"userGoNum"));
-                QueryChip queryChip= cardService.querychip(userId,Integer.parseInt(mileage));
+                //获得里程数对应的卡片等级
+                int height=cardHeightByMile(Integer.parseInt(mileage));
+                QueryChip queryChip= cardService.querychip(userId,height);
                 template.opsForHash().put(String.valueOf(userId),"userIsGo","-1");
                 //返回成功标识
                 return RetResponse.makeRspCode(code,queryChip,"");
@@ -106,5 +108,36 @@ public class CardController {
         String userId=sessionHandler.getSession(request,response,"userId");
         ChipCollCase chipCollCase=cardService.chipcollcase(userId,cardId);
         return RetResponse.makeOKRsp(chipCollCase);
+    }
+
+    /*用户赠送碎片*/
+    @RequestMapping("/sendchip")
+    @ResponseBody
+    public Result sendChip(@RequestParam("chip_id") String chipId,@RequestParam("friend_id") String friendId,HttpServletRequest request, HttpServletResponse response){
+        String userId=sessionHandler.getSession(request,response,"userId");
+        boolean b = cardService.sendChip(userId, friendId, chipId);
+        return RetResponse.makeOKRsp(b);
+    }
+
+    /*用户接受碎片*/
+    @RequestMapping("/recvchip")
+    @ResponseBody
+    public Result recvchip(@RequestParam("chip_id")String chipId,@RequestParam("sender_id")String senderId,HttpServletRequest request, HttpServletResponse response){
+        String userId=sessionHandler.getSession(request,response,"userId");
+        boolean b = cardService.recvChip(userId, senderId, chipId);
+        return RetResponse.makeOKRsp(b);
+    }
+
+    /**
+     * 里程数获得卡片等级，里程数越大越大概率获得等级大的卡片
+     * @param mileage 里程数
+     * @return 卡片等级
+     */
+    public int cardHeightByMile(int mileage){
+        if(mileage<10){
+            return 1;
+        }else if(mileage<20){
+            return 2;
+        }else return 3;
     }
 }

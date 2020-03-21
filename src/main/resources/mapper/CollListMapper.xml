@@ -4,9 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sout.carcre.mapper.CollListMapper">
 
-    <!--public int insertChipLogByCollList(int userId,int chipId);-->
+    <!--public int insertChipLogByCollList(int userId,int chipId,collType);-->
     <insert id="insertChipLogByCollList" parameterType="map">
-        insert into coll_list(user_id,coll_id) values(#{userId},#{chipId})
+        insert into coll_list(user_id,coll_id,coll_type) values(#{userId},#{chipId},#{collType})
     </insert>
 
 </mapper>

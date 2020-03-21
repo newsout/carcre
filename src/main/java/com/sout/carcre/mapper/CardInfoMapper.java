@@ -2,6 +2,7 @@ package com.sout.carcre.mapper;
 
 import com.sout.carcre.controller.bean.SynCard;
 import com.sout.carcre.service.bean.CardFewInfo;
+import com.sout.carcre.service.bean.CardHeightContent;
 import com.sout.carcre.service.bean.ChipFromCard;
 import org.apache.coyote.OutputBuffer;
 import org.apache.ibatis.annotations.Mapper;
@@ -38,4 +39,6 @@ public interface CardInfoMapper {
     //根据卡片ID获取卡片限定日期
     public String selectCardLimitByCardId(@Param("cardId") int cardId);
 
+    //根据卡片ID获取卡片等级
+    public CardHeightContent selectCardHeightByCardId(@Param("cardId")int cardId);
 }

@@ -1,5 +1,7 @@
 package com.sout.carcre.controller;
 
+import com.sout.carcre.controller.bean.SimpleMessage;
+import com.sout.carcre.controller.bean.beanson.SenderMessage;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
@@ -10,6 +12,7 @@ import com.sout.carcre.mapper.RankWeeklyMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.MessageList;
 import com.sout.carcre.service.MainService;
+import com.sout.carcre.service.MessageService;
 import com.sout.carcre.service.RankService;
 import com.sout.carcre.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,8 @@ public class MessageController {
     @Autowired
     TestService testService;
     @Autowired
+    MessageService messageService;
+    @Autowired
     RedisConfig redisConfig;
     @Autowired
     CardInfoMapper cardInfoMapper;
@@ -52,10 +57,15 @@ public class MessageController {
     /*用户查看消息列表*/
     @RequestMapping("/simple_message")
     @ResponseBody
-    public Result<List<MessageList>> simpleMessage(HttpServletResponse response, HttpServletRequest request) {
+    public Result<SimpleMessage> simpleMessage(HttpServletResponse response, HttpServletRequest request) {
         int userId=Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
         userInfoMapper.updateIsMessageById(userId,0);
-        return RetResponse.makeOKRsp(messageListMapper.selectSimpleMessageByUserId(userId));
+        SimpleMessage simpleMessage=new SimpleMessage();
+        List<SenderMessage> senderMessageList=messageService.querySendedChip(userId);
+        List<MessageList> messageListList=messageListMapper.selectSimpleMessageByUserId(userId);
+        simpleMessage.setMessageListList(messageListList);
+        simpleMessage.setSenderMessageList(senderMessageList);
+        return RetResponse.makeOKRsp(simpleMessage);
     }
 
     @RequestMapping("/message")

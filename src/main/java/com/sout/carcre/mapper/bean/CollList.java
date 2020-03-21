@@ -15,5 +15,6 @@ public class CollList {
     private long id;
     private Integer userId;
     private Integer collId;
+    private Integer collType;//碎片类型：获取/发送
     private Timestamp createTime;
 }

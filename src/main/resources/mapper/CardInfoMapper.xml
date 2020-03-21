@@ -26,6 +26,11 @@
         select count(id) from card_info where card_is_usable=1
     </select>
 
+    <!--    public String selectCardHeightByCardId(@Param("cardId")String cardId);-->
+    <select id="selectCardHeightByCardId" resultType="com.sout.carcre.service.bean.CardHeightContent">
+        select card_height,card_content from card_info where card_id=#{cardId}
+    </select>
+
 <!--    public List<Integer> cardUsableId();-->
     <select id="cardUsableId" resultType="integer">
         select card_id from card_info where card_is_usable=1

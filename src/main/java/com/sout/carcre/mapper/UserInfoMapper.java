@@ -49,7 +49,16 @@ public interface UserInfoMapper {
     //更新用户拥有得碳积分
     public int updateGradeByNew(@Param("userId")int userId,@Param("gradeAll") int gradeAll,@Param("grade")int grade);
 
-//    //查询用户领取碎片状态
+    //获取用户被赠送卡片信息
+    public String selectSendedChipByUserId(@Param("userId")int userId);
+
+    //根据用户ID获取用户昵称
+    public String selectNickNameByUserId(@Param("userId")int userId);
+
+    //更新用户被赠送卡片信息
+    public int updateSendedChipByUserId(@Param("userId")int userId,@Param("sendChip")String sendChip);
+
+    //    //查询用户领取碎片状态
 //    public int selectChipStatusByUserId(@Param("userId")int userId);
 
 //    //更新用户领取碎片信息
@@ -64,5 +73,6 @@ public interface UserInfoMapper {
     public int updateIsMessageByMobilPhone(String mobilePhone,int status);
 
     public int updateIsMessageById(int id,int status);
+
 
 }
