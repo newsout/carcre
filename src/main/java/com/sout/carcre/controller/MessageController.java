@@ -60,11 +60,13 @@ public class MessageController {
     public Result<SimpleMessage> simpleMessage(HttpServletResponse response, HttpServletRequest request) {
         int userId=Integer.parseInt(sessionHandler.getSession(request, response, "userId"));
         userInfoMapper.updateIsMessageById(userId,0);
+
         SimpleMessage simpleMessage=new SimpleMessage();
         List<SenderMessage> senderMessageList=messageService.querySendedChip(userId);
-        List<MessageList> messageListList=messageListMapper.selectSimpleMessageByUserId(userId);
-        simpleMessage.setMessageListList(messageListList);
+        List<MessageList> messageList=messageListMapper.selectSimpleMessageByUserId(userId);
+        simpleMessage.setMessageListList(messageList);
         simpleMessage.setSenderMessageList(senderMessageList);
+
         return RetResponse.makeOKRsp(simpleMessage);
     }
 

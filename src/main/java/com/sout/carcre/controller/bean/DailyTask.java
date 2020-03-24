@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class DailyTask {
+
     /*用户签到次数*/
     private int signNum;
 

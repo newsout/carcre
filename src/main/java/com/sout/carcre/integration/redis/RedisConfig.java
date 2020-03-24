@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -27,6 +28,7 @@ import java.util.Map;
 @EnableCaching
 public class RedisConfig {
 
+
     @Autowired
     private RedisProperties redisProperties;
 
@@ -35,13 +37,14 @@ public class RedisConfig {
     @PostConstruct
     public void initRedisTemp() throws Exception{
         System.out.println("初始化开始");
-        redisTemplateMap.put(0,redisTemplateObject(0)); //缓存排行榜信息
-        redisTemplateMap.put(1,redisTemplateObject(1)); //缓存周排行榜信息
-        redisTemplateMap.put(2,redisTemplateObject(2)); //缓存每日任务
+        redisTemplateMap.put(0,redisTemplateObject(redisProperties.getRankdataDB())); //缓存排行榜信息
+        redisTemplateMap.put(1,redisTemplateObject(redisProperties.getRankweeklyDB())); //缓存周排行榜信息
+        redisTemplateMap.put(2,redisTemplateObject(redisProperties.getDailyTaskDB())); //缓存每日任务
         redisTemplateMap.put(3,redisTemplateObject(3));
-        redisTemplateMap.put(15,redisTemplateObject(15)); //session
+        redisTemplateMap.put(15,redisTemplateObject(redisProperties.getSessionDB())); //session
         System.out.println("初始化结束");
     }
+
     public RedisTemplate<String, Object> getRedisTemplateByDb(int db){
         return redisTemplateMap.get(db);
     }
@@ -67,11 +70,11 @@ public class RedisConfig {
         RedisStandaloneConfiguration redisStandaloneConfiguration =
                 new RedisStandaloneConfiguration();
         //设置redis服务器的host或者ip地址
-        redisStandaloneConfiguration.setHostName("jnlzw.top");
+        redisStandaloneConfiguration.setHostName(redisProperties.getHost());
         //设置默认使用的数据库
         redisStandaloneConfiguration.setDatabase(indexDB);
         //设置密码
-        redisStandaloneConfiguration.setPassword(RedisPassword.of("123"));
+        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisProperties.getPassword()));
         //设置redis的服务的端口号
         redisStandaloneConfiguration.setPort(6379);
         //获得默认的连接池构造器(怎么设计的，为什么不抽象出单独类，供用户使用呢)

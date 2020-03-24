@@ -10,6 +10,7 @@ import com.sout.carcre.mapper.bean.RankWeekly;
 import com.sout.carcre.mapper.bean.UserInfo;
 import org.apache.ibatis.ognl.Ognl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,11 @@ public class RankService {
     @Autowired
     RedisConfig redisConfig;
 
+    @Value("${redisDB.rankdataDB}")
+    private Integer rankdataDB;
+    @Value("${redisDB.rankweeklyDB}")
+    private Integer rankweeklyDB;
+
 
     public List<RankData> getRankTenData(UserInfo userInfo) {
         List<RankData> rankDataList = getRankData(userInfo);
@@ -51,7 +57,7 @@ public class RankService {
     }
 
     public List<RankData> getRankData(UserInfo userInfo) {
-        RedisTemplate<String, Object> template = redisConfig.getRedisTemplateByDb(0);
+        RedisTemplate<String, Object> template = redisConfig.getRedisTemplateByDb(rankdataDB);
         List<RankData> rankDataList = new ArrayList<>();
         RankData rankData = JSONObject.parseObject(JSONObject.toJSONString(userInfo), RankData.class);
         rankData.setAllValue(rankData.getHighNum() * 3 + rankData.getMediumNum() * 2 + rankData.getLowNum());
@@ -83,7 +89,7 @@ public class RankService {
     }
 
     public List<RankWeekly> getRankWeekly(UserInfo userInfo) {
-        RedisTemplate<String, Object> template = redisConfig.getRedisTemplateByDb(1);
+        RedisTemplate<String, Object> template = redisConfig.getRedisTemplateByDb(rankweeklyDB);
         List<RankWeekly> rankWeeklyList = new ArrayList<>();
         RankWeekly rankWeekly = rankWeeklyMapper.selectDataByMobilPhone(userInfo.getMobilePhone());
         rankWeeklyList.add(rankWeekly);

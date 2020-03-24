@@ -19,6 +19,7 @@ import com.sout.carcre.service.RankService;
 import com.sout.carcre.service.TestService;
 import com.sout.carcre.service.bean.interfacebean.BaseTripResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +54,11 @@ public class HomeController {
     @Autowired
     CardInfoMapper cardInfoMapper;
 
+    @Value("${redisDB.dailyTaskDB}")
+    private Integer dailyTaskDB;
+
+
+
     /*首页请求数据*/
     @RequestMapping("/homepage")
     @ResponseBody
@@ -67,7 +73,7 @@ public class HomeController {
             rankWeeklyMapper.insertRankWeeklyData(userInfo);
         }
         //查询每日任务情况 先切换到1号库
-        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(2);
+        RedisTemplate<String, Object> template1=redisConfig.getRedisTemplateByDb(dailyTaskDB);
         Map<String, String> map = new HashMap<>();
         if (!template1.hasKey(userId)) {
             DailyTask dailyTask=new DailyTask();
@@ -113,12 +119,11 @@ public class HomeController {
     @Autowired
     DailyTaskService dailyTaskService;
 
-
     @RequestMapping("/dailytask")
     @ResponseBody
     public Result<Map> dailyTask (HttpServletResponse response, HttpServletRequest request) {
         Integer userId = new Integer(sessionHandler.getSession(request, response, "userId"));
-        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(2);
+        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(dailyTaskDB);
         String userStatus= (String) template.opsForHash().get(String.valueOf(userId),"userIsGo");
         if(userStatus==null||userStatus.equals("0")){//没有存储或者存储了但是没有完成里程
             BaseTripResult baseTripResult = mainService.baseTriplist(userId);
@@ -126,9 +131,6 @@ public class HomeController {
             if(status.equals("3")){//已经完成行程
                 template.opsForHash().put(String.valueOf(userId),"userIsGo","1");
                 template.opsForHash().put(String.valueOf(userId),"userGoNum",String.valueOf(baseTripResult.getMileage()));
-            }else {//没有里程信息
-                template.opsForHash().put(String.valueOf(userId),"userIsGo","0");
-                template.opsForHash().put(String.valueOf(userId),"userGoNum","0");
             }
         }
         return RetResponse.makeOKRsp(template.opsForHash().entries(userId.toString()));

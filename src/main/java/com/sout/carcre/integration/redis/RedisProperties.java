@@ -1,6 +1,7 @@
 package com.sout.carcre.integration.redis;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -35,5 +36,14 @@ public class RedisProperties {
     private Integer maxIdle=10;
     private Integer minIdle=0;
     private Integer maxWait=5000;
+
+    @Value("${redisDB.rankdataDB}")
+    private Integer rankdataDB;
+    @Value("${redisDB.rankweeklyDB}")
+    private Integer rankweeklyDB;
+    @Value("${redisDB.dailyTaskDB}")
+    private Integer dailyTaskDB;
+    @Value("${redisDB.sessionDB}")
+    private Integer sessionDB;
 }
 

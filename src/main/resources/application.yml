@@ -21,4 +21,11 @@ logging:
         carcre:
           mapper: debug
 
+dailyTask:
+  shareNumMax: 3
 
+redisDB:
+  rankdataDB: 0
+  rankweeklyDB: 1
+  dailyTaskDB: 2
+  sessionDB: 15

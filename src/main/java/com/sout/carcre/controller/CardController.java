@@ -15,6 +15,7 @@ import com.sout.carcre.service.CardService;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.bean.interfacebean.BaseTripResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -46,6 +47,14 @@ public class CardController {
     @Autowired
     RedisConfig redisConfig;
 
+    @Value("${redisDB.rankdataDB}")
+    private Integer rankdataDB;
+    @Value("${redisDB.rankweeklyDB}")
+    private Integer rankweeklyDB;
+    @Value("${redisDB.dailyTaskDB}")
+    private Integer dailyTaskDB;
+    @Value("${redisDB.sessionDB}")
+    private Integer sessionDB;
     /*用户获取随机卡片*/
     @RequestMapping("/querychip")
     @ResponseBody
@@ -55,7 +64,7 @@ public class CardController {
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
         //1、判断是否完成里程
-        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(2);
+        RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(dailyTaskDB);
         String status= (String) template.opsForHash().get(String.valueOf(userId),"userIsGo");
         //当用户行程状态为已经付款时
         if(status.equals("1")){//说明已经完成出行但是没有抽取卡片

@@ -11,7 +11,7 @@
 
 <!--        public RankWeekly selectDataByMobilPhone(String mobilPhone);-->
     <select id="selectDataByMobilPhone" resultType="com.sout.carcre.mapper.bean.RankWeekly">
-        select * from  rank_weekly
+        select mobile_phone, nickname, grade_num, coll_num from  rank_weekly
         where mobile_phone=#{mobilPhone}
     </select>
 

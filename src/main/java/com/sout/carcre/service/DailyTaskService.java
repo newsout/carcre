@@ -6,6 +6,9 @@ import com.sout.carcre.integration.handler.BeanAndMap;
 import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.bean.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,8 @@ public class DailyTaskService {
 
     private Integer dailyTaskDB=2;
     //定义每日任务最大次数
-    private Integer shareNumMax=3;
+    @Value("${dailyTask.shareNumMax}")
+    private Integer shareNumMax;
 
 
     //根据userinfo获取每日任务信息
@@ -46,6 +50,7 @@ public class DailyTaskService {
     }
 
     public void increaseShareNum(Integer userId){
+        System.out.println(shareNumMax);
         RedisTemplate<String, Object> template=redisConfig.getRedisTemplateByDb(dailyTaskDB);
         Object value = template.opsForHash().get(userId.toString(),"shareNum");
         int num=Integer.parseInt(Objects.requireNonNull(value).toString());

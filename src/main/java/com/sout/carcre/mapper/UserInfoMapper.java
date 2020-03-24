@@ -70,9 +70,9 @@ public interface UserInfoMapper {
 //    //设置数据库中用户获取碎片状态为0（方便前端测试，实际没有）
 //    public int updateChipStatus0ByuserId(@Param("userId")int userId);
 
-    public int updateIsMessageByMobilPhone(String mobilePhone,int status);
+    public int updateIsMessageByMobilPhone(@Param("mobilePhone") String mobilePhone,@Param("status")int status);
 
-    public int updateIsMessageById(int id,int status);
+    public int updateIsMessageById(@Param("id")int id,@Param("status")int status);
 
 
 }
