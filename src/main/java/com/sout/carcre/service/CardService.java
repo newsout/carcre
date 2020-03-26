@@ -44,13 +44,13 @@ public class CardService {
         List<ChipFromCard> chiplist=cardInfoMapper.seleteChipByheight(height);
 
         //获得随机数 randNum
-        int sumnum=chiplist.size()*9;
+        int sumnum=chiplist.size()*12;
         Random random=new Random();
         int randNum=random.nextInt(sumnum)+1;
 
         //根据随机数获得具体获得的碎片信息
-        int listindex=(randNum-1)/9;
-        int interindex=(randNum-1)%9;
+        int listindex=(randNum-1)/12;
+        int interindex=(randNum-1)%12;
 
         /*获取的碎片详细信息*/
         ChipFullInfo chipFullInfo=new ChipFullInfo();
@@ -157,7 +157,7 @@ public class CardService {
                 }else if(state==1) state=2;
             }else break;
         }
-        if(newchipnumber!=9){//9为碎片的总个数，判断此时是否可以合成
+        if(newchipnumber!=12){//12为碎片的总个数，判断此时是否可以合成
             return false;
         }
         /*拼接碎片信息，用于更新数据库*/
@@ -244,7 +244,7 @@ public class CardService {
             }else if(i!=0){
                 boolean state=true;//标定是否可以将此卡片返回给用户
                 //判断当前卡片是否超过限定卡片日期,查询卡片限定日期
-                int cardId= Integer.parseInt(chipinfo[i].split(":")[0]);
+                int cardId= Integer.parseInt(chipinfo[i-1].split(":")[0]);
                 String cardLimit=cardInfoMapper.selectCardLimitByCardId(cardId);
                 if(!"0".equals(cardLimit)){//为限定卡片
                     if(!compareTime(cardLimit)) state=false;//卡片过期
@@ -258,7 +258,7 @@ public class CardService {
                     chipNum.setChipNum(realchipNum);
                     chipNum.setCardNum(realCardnum);
                     chipNum.setCardLimit(cardLimit);
-                    chipNum.setCardId(chipinfo[i].split(":")[0]);
+                    chipNum.setCardId(chipinfo[i-1].split(":")[0]);
                     list.add(chipNum);
                 }
                 /*存储上一个ID值*/
@@ -346,7 +346,7 @@ public class CardService {
         chipCollCase.setCardRoughInfo(cardRoughInfo);
 
         /*判断用户是否有卡片合成*/
-        boolean cardIsSyn=(list.size()==9);
+        boolean cardIsSyn=(list.size()==12);
         chipCollCase.setChipIsSyn(cardIsSyn);
         return chipCollCase;
     }
@@ -624,9 +624,9 @@ public class CardService {
             String data=array[i].split(":")[0];
             if(data.equals(cardId))
                 chipnum++;
-            if (chipnum==9) break;
+            if (chipnum==12) break;
         }
-        if(chipnum==9) return true;
+        if(chipnum==12) return true;
         return false;
     }
 
@@ -672,7 +672,7 @@ public class CardService {
      */
     public int realCardNum(String[] chipNumArray){
         int num=Integer.parseInt(chipNumArray[0]);
-        if(chipNumArray.length!=9) return 0;
+        if(chipNumArray.length!=12) return 0;
         for(int i=0;i<chipNumArray.length;i++){
             if(chipNumArray[i]==null|| chipNumArray[i].equals("")) return 0;
             else if(Integer.parseInt(chipNumArray[i])<num) {
@@ -714,7 +714,7 @@ public class CardService {
     }
 
     /**
-     * 获取用户不重复的卡片数量
+     * 获取用户不重复的碎片数量
      * @param chipNum
      * @return
      */
