@@ -258,8 +258,17 @@ public class CardService {
                     chipNum.setChipNum(realchipNum);
                     chipNum.setCardNum(realCardnum);
                     chipNum.setCardLimit(cardLimit);
+                    //根据卡片ID获取卡片描述信息
+                    String cardDecribe=cardInfoMapper.selectCardDescribeByCardId(cardId);
+                    chipNum.setCardDescribe(cardDecribe);
                     chipNum.setCardId(chipinfo[i-1].split(":")[0]);
                     list.add(chipNum);
+                }else {//将标记碎片个数的数组置空
+                    for(int w=0;w<cardNum.length;w++){
+                        if (cardNum[w] != null) {
+                            cardNum[w] = null;
+                        }
+                    }
                 }
                 /*存储上一个ID值*/
                 i--;
@@ -285,10 +294,13 @@ public class CardService {
             int realchipNum=notRepeatChip(cardNum,realCardnum);
             chipNum.setChipNum(realchipNum);
             chipNum.setCardNum(realCardnum);
+            chipNum.setCardLimit(cardLimit);
             chipNum.setCardId(String.valueOf(cardId));
+            //根据卡片ID获取卡片描述信息
+            String cardDecribe=cardInfoMapper.selectCardDescribeByCardId(cardId);
+            chipNum.setCardDescribe(cardDecribe);
             list.add(chipNum);
         }
-
 
         /*存储用户数据*/
         UserForCard userForCard=new UserForCard();

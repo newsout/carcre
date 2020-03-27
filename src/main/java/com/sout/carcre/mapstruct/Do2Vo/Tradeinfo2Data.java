@@ -21,6 +21,7 @@ public interface Tradeinfo2Data {
            @Mapping(source = "tradeName",target = "tradeName"),
            @Mapping(source = "tradeId",target = "tradeId"),
            @Mapping(source = "tradeLimit",target = "tradeLimit"),
+           @Mapping(source = "tradeIsPost",target = "tradeIsPost"),
 //           @Mapping(source = "tradePic",target = "tradePic"),
            @Mapping(source = "tradeGrade",target = "tradeHeight")
    })

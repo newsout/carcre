@@ -16,6 +16,9 @@ public class ChipNum {
     /*卡片要合成的卡片数*/
     private int cardNum;
 
+    /*卡片描述信息*/
+    private String cardDescribe;
+
     /*卡片的限定终止日期*/
     private String cardLimit;
 }

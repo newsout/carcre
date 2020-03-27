@@ -31,6 +31,11 @@
         select card_height,card_content from card_info where card_id=#{cardId}
     </select>
 
+    <!--    public String selectCardDescribeByCardId(@Param("cardId") int cardId);-->
+    <select id="selectCardDescribeByCardId" resultType="java.lang.String">
+        select card_describe from card_info where card_id=#{cardId}
+    </select>
+
 <!--    public List<Integer> cardUsableId();-->
     <select id="cardUsableId" resultType="integer">
         select card_id from card_info where card_is_usable=1

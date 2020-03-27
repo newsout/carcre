@@ -27,6 +27,9 @@ public class TradeData {
     /*商品库存量*/
     private int tradeSto;
 
+    /*商品是否需要邮寄*/
+    private int tradeIsPost;
+
     /*商品限时信息*/
     private String tradeLimit;
 
@@ -35,13 +38,14 @@ public class TradeData {
 
     public TradeData(){}
 
-    public TradeData(Integer tradeId, List<String> tradePicList, String tradeName, Integer tradeHeight, int tradeNum, int tradeSto, String tradeLimit, String tradeContent) {
+    public TradeData(Integer tradeId, List<String> tradePicList, String tradeName, Integer tradeHeight, int tradeNum, int tradeSto, int tradeIsPost, String tradeLimit, String tradeContent) {
         this.tradeId = tradeId;
         this.tradePicList = tradePicList;
         this.tradeName = tradeName;
         this.tradeHeight = tradeHeight;
         this.tradeNum = tradeNum;
         this.tradeSto = tradeSto;
+        this.tradeIsPost = tradeIsPost;
         this.tradeLimit = tradeLimit;
         this.tradeContent = tradeContent;
     }
@@ -92,6 +96,14 @@ public class TradeData {
 
     public void setTradeSto(int tradeSto) {
         this.tradeSto = tradeSto;
+    }
+
+    public int getTradeIsPost() {
+        return tradeIsPost;
+    }
+
+    public void setTradeIsPost(int tradeIsPost) {
+        this.tradeIsPost = tradeIsPost;
     }
 
     public String getTradeLimit() {

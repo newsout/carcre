@@ -41,4 +41,7 @@ public interface CardInfoMapper {
 
     //根据卡片ID获取卡片等级
     public CardHeightContent selectCardHeightByCardId(@Param("cardId")int cardId);
+
+    //根据卡片ID获取卡片描述信息
+    public String selectCardDescribeByCardId(@Param("cardId") int cardId);
 }
