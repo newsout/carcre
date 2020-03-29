@@ -1,9 +1,6 @@
 package com.sout.carcre.service;
 
-import com.sout.carcre.controller.bean.CardPage;
-import com.sout.carcre.controller.bean.ChipCollCase;
-import com.sout.carcre.controller.bean.QueryChip;
-import com.sout.carcre.controller.bean.SynCard;
+import com.sout.carcre.controller.bean.*;
 import com.sout.carcre.controller.bean.beanson.*;
 import com.sout.carcre.mapper.*;
 import com.sout.carcre.mapper.bean.GradeList;
@@ -111,31 +108,25 @@ public class CardService {
      * @param userId 用户ID
      * @return 返回合成的卡片信息
      */
-    public boolean syncard(String cardId,String userId){
-//        SynCard synCard=new SynCard();
-
+    public UserSynCard syncard(String cardId,String userId){
+        /*返回数据信息*/
+        UserSynCard userSynCard=new UserSynCard();
+        List<ChipCase> chipCaseList=new ArrayList<>();
         /*更新后的碎片信息*/
         StringBuilder upAfterChipinfo=new StringBuilder();
-
         /*更新后的卡片信息*/
         StringBuilder upAfterCardInfo=new StringBuilder();
-
         /*取出用户所有信息*/
         int userNumber=Integer.parseInt(userId);
         UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(userNumber);
-
         //取出卡片对应的碎片信息
         int cardnumber=Integer.parseInt(cardId);
         String chipinfo=userInfo.getUserPiece();
         String[] chipinfoArray=chipinfo.split(",");
-
         //记录修改碎片信息的个数
         int newchipnumber=0;
-
         //获取碎片对应的要合成的数量
         int cardWillSyn=ChipNumMin(chipinfoArray,cardId);
-        System.out.println("合成的卡片数量"+cardWillSyn);
-
         //遍历卡片数组修改卡片对应碎片数量
         /*设置标志位,减少遍历成本*/
         int state=0;//0-未遍历到卡片 1-正在遍历卡片 2-卡片遍历结束
@@ -150,21 +141,24 @@ public class CardService {
                     if(chipnum==0){
                         chipinfoArray= (String[]) deldataFromArray(chipinfoArray,i);
                         i-=1;
-                    }
-                    else
+                    }else{
                         chipinfoArray[i]=info[0]+":"+info[1]+":"+chipnum;
-
+                        //增加合成后碎片剩余列表信息
+                        ChipCase chipCase=new ChipCase();
+                        chipCase.setShipId(info[0]);
+                        chipCase.setShipNum(chipnum);
+                        chipCaseList.add(chipCase);
+                    }
                 }else if(state==1) state=2;
             }else break;
         }
         if(newchipnumber!=12){//12为碎片的总个数，判断此时是否可以合成
-            return false;
+            return null;
         }
         /*拼接碎片信息，用于更新数据库*/
         for(int w=0;w<chipinfoArray.length;w++){
             upAfterChipinfo.append(chipinfoArray[w]).append(",");
         }
-
         //遍历卡片获取卡片信息
         String[] cardinfo=userInfo.getUserCard().split(",");
         for(int i=0;i<cardinfo.length;i++){
@@ -179,7 +173,6 @@ public class CardService {
         for(int i=0;i<cardinfo.length;i++){
             upAfterCardInfo.append(cardinfo[i]).append(",");
         }
-
         /*更新数据库中用户拥有的碳积分*/
         //从数据库中取出卡片对应的碳积分
         int gradenum=cardInfoMapper.selectGradeBycardId(cardnumber);
@@ -189,27 +182,22 @@ public class CardService {
         int allgradenew=userGrade.getUserGradeAll()+gradenum;
         int gradenew=userGrade.getUserGrade()+gradenum;
         userInfoMapper.updateGradeByNew(userNumber,allgradenew,gradenew);
-
         /*增加用户获取积分记录*/
         GradeListInfo gradeList=new GradeListInfo();
         gradeList.setUserId(userNumber);
         gradeList.setGrade(gradenum);
         gradeList.setGradeRemark("card");
         gradeListMapper.insertGradeListByRemark(gradeList);
-
         //更新碎片信息
         userInfoMapper.updateChipInfoByuserId(Integer.parseInt(userId),upAfterChipinfo.toString());
-
         //更新卡片信息
         userInfoMapper.updateCardInfoByUserId(Integer.parseInt(userId),upAfterCardInfo.toString());
-
         //更新用户周排行榜数据
         int weekGradeNum=rankWeeklyMapper.selectGradeNumByUserId(Integer.parseInt(userId))+gradenum;
         rankWeeklyMapper.updateGradeNumByUserID(Integer.parseInt(userId),weekGradeNum);
-//
-//        //查询对应卡片的路径信息以及等级信息
-//        synCard=cardInfoMapper.seleteCardBycardId(Integer.parseInt(cardId));
-        return true;
+        userSynCard.setSynCardNum(cardWillSyn);
+        userSynCard.setChipCaseList(chipCaseList);
+        return userSynCard;
     }
 
     /**
@@ -746,11 +734,15 @@ public class CardService {
      * @return
      */
     public int ChipNumMin(String[] chipInfo,String cardId){
-        int minNum=Integer.parseInt(chipInfo[0].split(":")[2]);
+        int minNum=65535;
         if(chipInfo!=null){
             for(int i=0;i<chipInfo.length;i++){
-                String chipsplit=chipInfo[i].split(":")[2];
-                if(cardId.equals(chipInfo[i].split(":")[0])&&minNum>Integer.parseInt(chipsplit)) minNum=Integer.parseInt(chipsplit);
+                String cardTemp=chipInfo[i].split(":")[0];
+                if(cardTemp.equals(cardId)){
+                    String chipsplit=chipInfo[i].split(":")[2];
+                    if(minNum>Integer.parseInt(chipsplit)) minNum=Integer.parseInt(chipsplit);
+                }
+
             }
         }
         return minNum;

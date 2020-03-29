@@ -1,9 +1,6 @@
 package com.sout.carcre.controller;
 
-import com.sout.carcre.controller.bean.CardPage;
-import com.sout.carcre.controller.bean.ChipCollCase;
-import com.sout.carcre.controller.bean.QueryChip;
-import com.sout.carcre.controller.bean.SynCard;
+import com.sout.carcre.controller.bean.*;
 import com.sout.carcre.controller.bean.beanson.ChipCase;
 import com.sout.carcre.controller.bean.beanson.ChipNum;
 import com.sout.carcre.integration.component.result.Result;
@@ -92,8 +89,8 @@ public class CardController {
     public Result syncard(@RequestParam("card_id") String cardId, HttpServletRequest request, HttpServletResponse response){
         //从session中取出对应用户ID
         String userId=sessionHandler.getSession(request,response,"userId");
-        boolean synCard=cardService.syncard(cardId,userId);
-        //如果有卡片合成。返回true，如果无卡片合成返回false(或合成失败)
+        UserSynCard synCard=cardService.syncard(cardId,userId);
+        //如果有卡片合成。返回信息，如果无卡片合成返回null(或合成失败)
         return RetResponse.makeOKRsp(synCard);
     }
 
