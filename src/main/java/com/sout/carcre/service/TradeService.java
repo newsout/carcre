@@ -1,14 +1,19 @@
 package com.sout.carcre.service;
 
 import com.sout.carcre.controller.bean.ShopPage;
+import com.sout.carcre.controller.bean.TradeChip;
 import com.sout.carcre.controller.bean.UserPur;
 import com.sout.carcre.controller.bean.beanson.TradeData;
+import com.sout.carcre.integration.component.result.RetResponse;
+import com.sout.carcre.mapper.GradeListMapper;
 import com.sout.carcre.mapper.TradeInfoMapper;
 import com.sout.carcre.mapper.TradeListMapper;
 import com.sout.carcre.mapper.UserInfoMapper;
 import com.sout.carcre.mapper.bean.TradeInfo;
 import com.sout.carcre.mapper.bean.TradeList;
 import com.sout.carcre.mapstruct.Do2Vo.Tradeinfo2Data;
+import com.sout.carcre.service.bean.GradeListInfo;
+import com.sout.carcre.service.bean.QueryChipService;
 import com.sout.carcre.service.bean.TradeSell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +36,8 @@ public class TradeService {
     UserInfoMapper userInfoMapper;
     @Autowired
     TradeListMapper tradeListMapper;
+    @Autowired
+    GradeListMapper gradeListMapper;
 
     //转化商品信息-数据库->controller
     public ShopPage tradelistinfo(String userId){
@@ -118,5 +125,26 @@ public class TradeService {
             if(nowTimeData<limitTimeData) return true;
         }
         return false;
+    }
+
+    /**
+     * 碳积分商城购买稀有碎片
+     * @param userId
+     * @param tradeChipPrice
+     * @return
+     */
+    public void tradeGetChip(String userId,int tradeChipPrice){
+        //存储碳积分交易信息（记录）
+        GradeListInfo gradeListInfo=new GradeListInfo();
+        gradeListInfo.setUserId(Integer.parseInt(userId));
+        gradeListInfo.setGrade(tradeChipPrice);
+        gradeListInfo.setGradeRemark("rare card");
+        gradeListMapper.insertGradeListByRemark(gradeListInfo);
+        //存储商品交易信息
+        TradeList tradeList=new TradeList();
+        tradeList.setUserId(Integer.parseInt(userId));
+        tradeList.setTradeId(Integer.parseInt("100"));
+        tradeList.setTradeStatus(2);
+        tradeListMapper.insertTradeBytradeList(tradeList);
     }
 }

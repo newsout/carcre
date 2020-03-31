@@ -8,14 +8,12 @@ import com.sout.carcre.controller.bean.beanson.TradeData;
 import com.sout.carcre.integration.component.result.Result;
 import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
-import com.sout.carcre.mapper.GradeListMapper;
-import com.sout.carcre.mapper.TradeInfoMapper;
-import com.sout.carcre.mapper.TradeListMapper;
-import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapper.*;
 import com.sout.carcre.mapper.bean.TradeList;
 import com.sout.carcre.service.CardService;
 import com.sout.carcre.service.TradeService;
 import com.sout.carcre.service.bean.GradeListInfo;
+import com.sout.carcre.service.bean.QueryChipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -45,6 +43,8 @@ public class TradeController {
     UserInfoMapper userInfoMapper;
     @Autowired
     GradeListMapper gradeListMapper;
+    @Autowired
+    CardInfoMapper cardInfoMapper;
     @Autowired
     TradeListMapper tradeListMapper;
 
@@ -82,23 +82,15 @@ public class TradeController {
         //更新用户现有积分数
         userInfoMapper.updateGradeByUserId(Integer.parseInt(userId),userNowGrade);
         //获取稀有卡片的随机碎片
-        QueryChip queryChip=cardService.querychip(userId,1);//假设等级一为限定卡片
+        QueryChipService queryChipService=cardService.querychip(userId,1);//假设等级一为限定卡片
         TradeChip tradeChip=new TradeChip();
-        tradeChip.setCardIsSyn(queryChip.isCardIsSyn());
-        tradeChip.setChipPath(queryChip.getChipInfo().getChipPath());
+        //根据ID获取卡片名称
+        String cardId=queryChipService.getCardId();
+        String cardDescribe=cardInfoMapper.selectCardDescribeByCardId(Integer.parseInt(cardId));
+        tradeChip.setChipPath(queryChipService.getChipInfo().getChipPath());
         tradeChip.setUserGrade(userNowGrade);
-        //存储碳积分交易信息（记录）
-        GradeListInfo gradeListInfo=new GradeListInfo();
-        gradeListInfo.setUserId(Integer.parseInt(userId));
-        gradeListInfo.setGrade(tradeChipPrice);
-        gradeListInfo.setGradeRemark("rare card");
-        gradeListMapper.insertGradeListByRemark(gradeListInfo);
-        //存储商品交易信息
-        TradeList tradeList=new TradeList();
-        tradeList.setUserId(Integer.parseInt(userId));
-        tradeList.setTradeId(Integer.parseInt("100"));
-        tradeList.setTradeStatus(2);
-        tradeListMapper.insertTradeBytradeList(tradeList);
+        tradeChip.setCardName(cardDescribe);
+        tradeService.tradeGetChip(userId,tradeChipPrice);//存储交易信息
         return RetResponse.makeOKRsp(tradeChip);
     }
 }

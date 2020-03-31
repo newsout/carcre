@@ -8,6 +8,7 @@ import com.sout.carcre.integration.component.result.RetResponse;
 import com.sout.carcre.integration.handler.SessionHandler;
 import com.sout.carcre.integration.redis.RedisConfig;
 import com.sout.carcre.mapper.UserInfoMapper;
+import com.sout.carcre.mapstruct.Bo2Vo.QueryChipService2Chip;
 import com.sout.carcre.service.CardService;
 import com.sout.carcre.service.MainService;
 import com.sout.carcre.service.bean.interfacebean.BaseTripResult;
@@ -69,7 +70,7 @@ public class CardController {
                 String mileage=String.valueOf(template.opsForHash().get(String.valueOf(userId),"userGoNum"));
                 //获得里程数对应的卡片等级
                 int height=cardHeightByMile(Integer.parseInt(mileage));
-                QueryChip queryChip= cardService.querychip(userId,height);
+                QueryChip queryChip= QueryChipService2Chip.INSTANCE.queryChipService2Chip(cardService.querychip(userId,height));
                 template.opsForHash().put(String.valueOf(userId),"userIsGo","-1");
                 //返回成功标识
                 return RetResponse.makeRspCode(code,queryChip,"");

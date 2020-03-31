@@ -32,10 +32,10 @@ public class CardService {
      * @param height 卡片等级数
      * @return
      */
-    public QueryChip querychip(String userId,int height){
+    public QueryChipService querychip(String userId,int height){
 
         /*返回数据*/
-        QueryChip queryChip=new QueryChip();
+        QueryChipService queryChipService=new QueryChipService();
 
         //根据等级获得碎片信息
         List<ChipFromCard> chiplist=cardInfoMapper.seleteChipByheight(height);
@@ -94,13 +94,14 @@ public class CardService {
         //判断新的碎片数组中是否有合成卡片的可能
         boolean isnewcard=isNewCard(newchipinfo,String.valueOf(chipFullInfo.getCardId()));
 
-        queryChip.setCardIsSyn(isnewcard);
+        queryChipService.setCardIsSyn(isnewcard);
         //构建碎片信息
         ChipInfo chipInfo=new ChipInfo();
         chipInfo.setChipHeight(height);
         chipInfo.setChipPath(chipFullInfo.getChipPath());
-        queryChip.setChipInfo(chipInfo);
-        return queryChip;
+        queryChipService.setChipInfo(chipInfo);
+        queryChipService.setCardId(chipFromCard.getCardId());
+        return queryChipService;
     }
     /**
      * 合成卡片
@@ -164,7 +165,7 @@ public class CardService {
         for(int i=0;i<cardinfo.length;i++){
             String[] card=cardinfo[i].split(":");
             if(card[0].equals(cardId)){
-                int cardNum=Integer.parseInt(card[1])+1;
+                int cardNum=Integer.parseInt(card[1])+cardWillSyn;
                 cardinfo[i]=card[0]+":"+cardNum;
                 break;
             }
@@ -175,7 +176,7 @@ public class CardService {
         }
         /*更新数据库中用户拥有的碳积分*/
         //从数据库中取出卡片对应的碳积分
-        int gradenum=cardInfoMapper.selectGradeBycardId(cardnumber);
+        int gradenum=cardInfoMapper.selectGradeBycardId(cardnumber)*cardWillSyn;
         //取出用户对应的碳积分个数
         UserGrade userGrade=userInfoMapper.selectGradeByUserId(userNumber);
         //更新用户拥有的碳积分
@@ -213,7 +214,8 @@ public class CardService {
         UserInfo userInfo=userInfoMapper.selectUserInfoByUserId(userid);
         String userpiece=userInfo.getUserPiece();
         String[] chipinfo=userpiece.split(",");
-
+        //记录用户收集卡片情况
+        String[] cardinfo=userInfo.getUserCard().split(",");
         /*设置哨兵，标定卡片ID的转换*/
         String guard=null;
 
@@ -232,7 +234,8 @@ public class CardService {
             }else if(i!=0){
                 boolean state=true;//标定是否可以将此卡片返回给用户
                 //判断当前卡片是否超过限定卡片日期,查询卡片限定日期
-                int cardId= Integer.parseInt(chipinfo[i-1].split(":")[0]);
+                String cardIDString=chipinfo[i-1].split(":")[0];
+                int cardId= Integer.parseInt(cardIDString);
                 String cardLimit=cardInfoMapper.selectCardLimitByCardId(cardId);
                 if(!"0".equals(cardLimit)){//为限定卡片
                     if(!compareTime(cardLimit)) state=false;//卡片过期
@@ -244,7 +247,10 @@ public class CardService {
                     int realchipNum=notRepeatChip(cardNum,realCardnum);
                     ChipNum chipNum=new ChipNum();
                     chipNum.setChipNum(realchipNum);
-                    chipNum.setCardNum(realCardnum);
+                    //根据卡片ID查询总收集个数
+                    int cardCollNum = ArrayreturnNum(cardinfo, cardIDString);
+                    chipNum.setCardPreNum(realCardnum);
+                    chipNum.setCardTotalNum(cardCollNum);//更改为卡片已经收集的个数
                     chipNum.setCardLimit(cardLimit);
                     //根据卡片ID获取卡片描述信息
                     String cardDecribe=cardInfoMapper.selectCardDescribeByCardId(cardId);
@@ -281,7 +287,9 @@ public class CardService {
             int realCardnum=realCardNum(cardNum);
             int realchipNum=notRepeatChip(cardNum,realCardnum);
             chipNum.setChipNum(realchipNum);
-            chipNum.setCardNum(realCardnum);
+            int cardCollNum = ArrayreturnNum(cardinfo, String.valueOf(cardId));
+            chipNum.setCardPreNum(realCardnum);
+            chipNum.setCardTotalNum(cardCollNum);//更改为卡片已经收集的个数
             chipNum.setCardLimit(cardLimit);
             chipNum.setCardId(String.valueOf(cardId));
             //根据卡片ID获取卡片描述信息
@@ -436,6 +444,21 @@ public class CardService {
         return true;
     }
 
+    /**
+     * 根据用户收集的卡片数组查找对饮卡片ID的数量信息
+     * @param cardArray
+     * @param cardID
+     * @return 如果存在则返回已经收集的卡片个数，否则返回0
+     */
+    public int ArrayreturnNum(String[] cardArray,String cardID){
+        for(int i=0;i<cardArray.length;i++){
+            String[] data=cardArray[i].split(":");
+            if(cardID.equals(data[0])){//说明已经收集了此卡片
+                return Integer.parseInt(data[1]);
+            }
+        }
+        return 0;
+    }
     /**
      * 插入赠送碎片数组
      * @param array 数组id&chip&number

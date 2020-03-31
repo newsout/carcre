@@ -9,8 +9,8 @@ import lombok.Data;
  */
 @Data
 public class TradeChip {
-    /*是否有卡片合成*/
-    private boolean cardIsSyn;
+    /*卡片名称*/
+    private String cardName;
 
     /*碎片图像路径*/
     private String chipPath;
